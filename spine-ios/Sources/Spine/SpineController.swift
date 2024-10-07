@@ -199,7 +199,7 @@ extension SpineController: SpineRendererDataSource {
     
     func spineRenderer(_ spineRenderer: SpineRenderer, needsUpdate delta: TimeInterval) {
         drawable?.update(delta: Float(delta))
-        if (drawable)
+        if (drawable != nil)
         {
             spineRenderer.updateRGBTintData(
                 useRGB: true,
