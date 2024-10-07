@@ -75,6 +75,10 @@ vertexShader(uint vertexID [[vertex_id]],
     return out;
 }
 
+float random(float2 uv) {
+    return fract(sin(dot(uv.xy, float2(12.9898, 78.233))) * 43758.5453);
+}
+
 fragment float4
 fragmentShader(RasterizerData in [[stage_in]],
                texture2d<half> colorTexture [[ texture(SpineTextureIndexBaseColor) ]])
@@ -83,7 +87,7 @@ fragmentShader(RasterizerData in [[stage_in]],
                                       min_filter::nearest);
     
     half4 texColor = colorTexture.sample(textureSampler, in.textureCoordinate);
-    
+
     if (in.useRGB) {
         float3 originalColor = float3(texColor.rgb);
         float3 tintedColor = originalColor.r * in.redTint +
@@ -91,6 +95,14 @@ fragmentShader(RasterizerData in [[stage_in]],
                              originalColor.b * in.blueTint;
         texColor = half4(half3(tintedColor), texColor.a);
     }
+
+    // Generate random values for RGB channels based on texture coordinates
+    float randomRed   = random(in.textureCoordinate + float2(0.1, 0.0));  // Slightly offset to avoid correlation
+    float randomGreen = random(in.textureCoordinate + float2(0.0, 0.1));
+    float randomBlue  = random(in.textureCoordinate + float2(0.1, 0.1));
+    
+    // Overwrite texColor with a random color
+    texColor = half4(half3(randomRed, randomGreen, randomBlue), texColor.a);
 
     return float4(texColor) * in.color;
 }
