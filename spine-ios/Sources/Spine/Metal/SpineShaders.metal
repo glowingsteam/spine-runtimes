@@ -6,6 +6,7 @@ typedef enum SpineVertexInputIndex {
     SpineVertexInputIndexVertices     = 0,
     SpineVertexInputIndexTransform    = 1,
     SpineVertexInputIndexViewportSize = 2,
+    SpineVertexInputIndexRGBTintData = 3,
 } SpineVertexInputIndex;
 
 typedef enum SpineTextureIndex {
@@ -80,5 +81,13 @@ fragmentShader(RasterizerData in [[stage_in]],
     
     const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
     
+    if (in.useRGB) {
+        float3 originalColor = float3(texColor.rgb);
+        float3 tintedColor = originalColor.r * in.redTint +
+                             originalColor.g * in.greenTint +
+                             originalColor.b * in.blueTint;
+        texColor = half4(half3(tintedColor), texColor.a);
+    }
+
     return float4(colorSample) * in.color;
 }
