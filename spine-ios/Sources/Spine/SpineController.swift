@@ -199,6 +199,15 @@ extension SpineController: SpineRendererDataSource {
     
     func spineRenderer(_ spineRenderer: SpineRenderer, needsUpdate delta: TimeInterval) {
         drawable?.update(delta: Float(delta))
+        if (drawable)
+        {
+            spineRenderer.updateRGBTintData(
+                useRGB: true,
+                redTint: SIMD3<Float>(1.0, 0.0, 0.0), 
+                greenTint: SIMD3<Float>(0.0, 0.0, 0.0), 
+                blueTint: SIMD3<Float>(0.0, 0.0, 0.0)   
+            )
+        }
     }
     
     func isPlaying(_ spineRenderer: SpineRenderer) -> Bool {
