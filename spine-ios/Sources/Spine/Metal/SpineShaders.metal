@@ -6,7 +6,7 @@ typedef enum SpineVertexInputIndex {
     SpineVertexInputIndexVertices     = 0,
     SpineVertexInputIndexTransform    = 1,
     SpineVertexInputIndexViewportSize = 2,
-    SpineVertexInputIndexRGBTintData = 3,
+    SpineVertexInputIndexRGBTintData  = 3,
 } SpineVertexInputIndex;
 
 typedef enum SpineTextureIndex {
@@ -36,6 +36,10 @@ struct RasterizerData {
     float4 position [[position]];
     float4 color;
     float2 textureCoordinate;
+    bool useRGB;
+    float3 redTint;
+    float3 greenTint;
+    float3 blueTint;
 };
 
 vertex RasterizerData
@@ -60,7 +64,6 @@ vertexShader(uint vertexID [[vertex_id]],
     out.position.y *= -1;
     
     out.color = vertices[vertexID].color;
-    
     out.textureCoordinate = vertices[vertexID].uv;
     
     // Pass RGB tint data to fragment shader
@@ -79,7 +82,7 @@ fragmentShader(RasterizerData in [[stage_in]],
     constexpr sampler textureSampler (mag_filter::nearest,
                                       min_filter::nearest);
     
-    const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
+    half4 texColor = colorTexture.sample(textureSampler, in.textureCoordinate);
     
     if (in.useRGB) {
         float3 originalColor = float3(texColor.rgb);
@@ -89,5 +92,5 @@ fragmentShader(RasterizerData in [[stage_in]],
         texColor = half4(half3(tintedColor), texColor.a);
     }
 
-    return float4(colorSample) * in.color;
+    return float4(texColor) * in.color;
 }
