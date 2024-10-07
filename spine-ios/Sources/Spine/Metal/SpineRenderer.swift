@@ -44,6 +44,9 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
     private let bufferingSemaphore = DispatchSemaphore(value: SpineRenderer.numberOfBuffers)
     private var currentBufferIndex: Int = 0
     
+    private var rgbTintData = RGBTintData(useRGB: false, redTint: SIMD3<Float>(1, 0, 0), greenTint: SIMD3<Float>(0, 1, 0), blueTint: SIMD3<Float>(0, 0, 1))
+    
+
     weak var dataSource: SpineRendererDataSource?
     weak var delegate: SpineRendererDelegate?
     
@@ -233,6 +236,13 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
             offset: 0,
             index: Int(SpineVertexInputIndexVertices.rawValue)
         )
+
+        renderEncoder.setVertexBytes(
+            &rgbTintData,
+            length: MemoryLayout.size(ofValue: rgbTintData),
+            index: Int(SpineVertexInputIndexRGBTintData.rawValue)
+        )
+
         renderEncoder.setVertexBytes(
             &transform,
             length: MemoryLayout.size(ofValue: transform),
@@ -280,6 +290,11 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
         buffers = (0 ..< SpineRenderer.numberOfBuffers).map { _ in
             device.makeBuffer(length: size, options: .storageModeShared)!
         }
+    }
+
+    // Add a method to update RGB tint data
+    func updateRGBTintData(useRGB: Bool, redTint: SIMD3<Float>, greenTint: SIMD3<Float>, blueTint: SIMD3<Float>) {
+        rgbTintData = RGBTintData(useRGB: useRGB, redTint: redTint, greenTint: greenTint, blueTint: blueTint)
     }
 }
 
@@ -354,4 +369,12 @@ fileprivate extension MTLRenderPipelineColorAttachmentDescriptor {
 		destinationRGBBlendFactor = blendMode.destinationRGBBlendFactor
 		destinationAlphaBlendFactor = blendMode.destinationAlphaBlendFactor
 	}
+}
+
+// Add this struct to match the Metal shader struct
+struct RGBTintData {
+    var useRGB: Bool
+    var redTint: SIMD3<Float>
+    var greenTint: SIMD3<Float>
+    var blueTint: SIMD3<Float>
 }

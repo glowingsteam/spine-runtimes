@@ -15,6 +15,7 @@ target
 
 .idea/
 build/
+.build/
 cmake-build-debug/
 .vscode/settings.json
 spine-runtimes.code-workspace

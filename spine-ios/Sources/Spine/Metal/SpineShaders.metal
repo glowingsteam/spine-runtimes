@@ -24,6 +24,13 @@ typedef struct {
     vector_float2 offset;
 } SpineTransform;
 
+typedef struct {
+    bool useRGB;
+    float3 redTint;
+    float3 greenTint;
+    float3 blueTint;
+} RGBTintData;
+
 struct RasterizerData {
     float4 position [[position]];
     float4 color;
@@ -34,7 +41,8 @@ vertex RasterizerData
 vertexShader(uint vertexID [[vertex_id]],
              constant SpineVertex *vertices [[buffer(SpineVertexInputIndexVertices)]],
              constant SpineTransform *transform [[buffer(SpineVertexInputIndexTransform)]],
-             constant vector_uint2 *viewportSizePointer [[buffer(SpineVertexInputIndexViewportSize)]])
+             constant vector_uint2 *viewportSizePointer [[buffer(SpineVertexInputIndexViewportSize)]],
+             constant RGBTintData *rgbTintData [[buffer(SpineVertexInputIndexRGBTintData)]])
 {
     RasterizerData out;
 
@@ -54,6 +62,12 @@ vertexShader(uint vertexID [[vertex_id]],
     
     out.textureCoordinate = vertices[vertexID].uv;
     
+    // Pass RGB tint data to fragment shader
+    out.useRGB = rgbTintData->useRGB;
+    out.redTint = rgbTintData->redTint;
+    out.greenTint = rgbTintData->greenTint;
+    out.blueTint = rgbTintData->blueTint;
+
     return out;
 }
 

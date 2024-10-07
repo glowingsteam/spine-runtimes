@@ -7,6 +7,7 @@ typedef enum SpineVertexInputIndex {
     SpineVertexInputIndexVertices     = 0,
     SpineVertexInputIndexTransform    = 1,
     SpineVertexInputIndexViewportSize = 2,
+    SpineVertexInputIndexRGBTintData  = 3,
 } SpineVertexInputIndex;
 
 typedef enum SpineTextureIndex {
