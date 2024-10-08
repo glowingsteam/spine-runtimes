@@ -220,6 +220,13 @@ extension SpineUIView {
         renderer?.dataSource = controller
         renderer?.mtkView(self, drawableSizeWillChange: drawableSize)
         delegate = renderer
+
+        renderer?.updateRGBTintData(
+                useRGB: true,
+                redTint: SIMD3<Float>(Float.random(in: 0...1), Float.random(in: 0...1), Float.random(in: 0...1)), 
+                greenTint: SIMD3<Float>(Float.random(in: 0...1), Float.random(in: 0...1), Float.random(in: 0...1)), 
+                blueTint: SIMD3<Float>(Float.random(in: 0...1), Float.random(in: 0...1), Float.random(in: 0...1))   
+            )
     }
 }
 

@@ -172,13 +172,6 @@ extension SpineController: SpineRendererDelegate {
     
     func spineRendererWillDraw(_ spineRenderer: SpineRenderer) {
         onBeforePaint?(self)
-
-        spineRenderer.updateRGBTintData(
-                useRGB: true,
-                redTint: SIMD3<Float>(1, Float.random(in: 0...0.5), Float.random(in: 0...0.5)), 
-                greenTint: SIMD3<Float>(0.0, 0.0, 0.0), 
-                blueTint: SIMD3<Float>(0.0, 0.0, 0.0)   
-            )
     }
     
     func spineRendererDidDraw(_ spineRenderer: SpineRenderer) {
