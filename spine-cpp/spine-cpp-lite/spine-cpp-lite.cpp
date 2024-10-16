@@ -223,7 +223,18 @@ spine_bool spine_atlas_is_pma(spine_atlas atlas) {
 
 utf8 *spine_atlas_get_image_path(spine_atlas atlas, int32_t index) {
 	if (!atlas) return nullptr;
-	return ((_spine_atlas *) atlas)->imagePaths[index];
+	
+	utf8* original_path = ((_spine_atlas*)atlas)->imagePaths[index];
+    
+    if (original_path && std::strcmp(original_path, "animee_11.png") == 0) {
+        utf8* new_path = (utf8*)std::malloc(std::strlen("animee_11_swap.png") + 1);
+        if (new_path) {
+            std::strcpy(new_path, "animee_11_swap.png");
+            return new_path;
+        }
+    }
+    
+    return original_path;
 }
 
 utf8 *spine_atlas_get_error(spine_atlas atlas) {
