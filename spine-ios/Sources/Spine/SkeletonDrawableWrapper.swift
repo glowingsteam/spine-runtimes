@@ -133,6 +133,35 @@ public final class SkeletonDrawableWrapper: NSObject {
         skeleton.updateWorldTransform(physics: SPINE_PHYSICS_UPDATE)
     }
     
+    /// Sets the skin for the skeleton and manages texture loading
+    /// - Parameters:
+    ///   - skinName: The name of the skin to set
+    ///   - loadTextures: Whether to load required textures for the skin immediately
+    ///   - cleanupUnused: Whether to unload textures that are no longer used
+    /// - Returns: True if the skin was set successfully
+    @discardableResult
+    public func setSkin(skinName: String?, loadTextures: Bool = true, cleanupUnused: Bool = true) -> Bool {
+        if disposed { return false }
+        
+        // Set the skin on the skeleton
+        skeleton.setSkinByName(skinName: skinName)
+        
+        // Mark the atlas pages used by this skin and clean up unused pages
+        skeleton.markSkinAtlasPages(atlas: atlas, cleanupUnused: cleanupUnused)
+        
+        // If requested, load all required textures for this skin
+        if loadTextures {
+            let numPages = spine_atlas_get_num_image_paths(atlas.wrappee)
+            for i in 0..<numPages {
+                if atlas.isPageInUse(pageIndex: i) && !atlas.isPageLoaded(pageIndex: i) {
+                    atlas.loadPage(pageIndex: i)
+                }
+            }
+        }
+        
+        return true
+    }
+    
     public func dispose() {
         if disposed { return }
         disposed = true

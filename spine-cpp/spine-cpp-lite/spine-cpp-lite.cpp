@@ -55,7 +55,14 @@ typedef struct _spine_atlas {
 	utf8 **imagePaths;
 	int32_t numImagePaths;
 	utf8 *error;
+	spine_atlas_page_state* pageStates; // NEW: Add state tracking for each atlas page
 } _spine_atlas;
+
+typedef struct _spine_atlas_page_state {
+	void* texture;
+	bool loaded;
+	bool inUse;
+} spine_atlas_page_state;
 
 typedef struct _spine_skeleton_data_result {
 	spine_skeleton_data skeletonData;
@@ -200,8 +207,16 @@ spine_atlas spine_atlas_load(const utf8 *atlasData) {
 	result->atlas = atlas;
 	result->numImagePaths = (int32_t) atlas->getPages().size();
 	result->imagePaths = SpineExtension::calloc<utf8 *>(result->numImagePaths, __FILE__, __LINE__);
+	
+	// Allocate space for page states
+	result->pageStates = SpineExtension::calloc<spine_atlas_page_state>(result->numImagePaths, __FILE__, __LINE__);
+	
 	for (int i = 0; i < result->numImagePaths; i++) {
 		result->imagePaths[i] = (utf8 *) strdup(atlas->getPages()[i]->texturePath.buffer());
+		// Initialize page state
+		result->pageStates[i].texture = nullptr;
+		result->pageStates[i].loaded = false;
+		result->pageStates[i].inUse = false;
 	}
 	return (spine_atlas) result;
 }
@@ -238,8 +253,16 @@ spine_atlas spine_atlas_load_callback(const utf8 *atlasData, const utf8 *atlasDi
 	result->atlas = atlas;
 	result->numImagePaths = (int32_t) atlas->getPages().size();
 	result->imagePaths = SpineExtension::calloc<utf8 *>(result->numImagePaths, __FILE__, __LINE__);
+	
+	// Allocate space for page states
+	result->pageStates = SpineExtension::calloc<spine_atlas_page_state>(result->numImagePaths, __FILE__, __LINE__);
+	
 	for (int i = 0; i < result->numImagePaths; i++) {
 		result->imagePaths[i] = (utf8 *) strdup(atlas->getPages()[i]->texturePath.buffer());
+		// Initialize page state
+		result->pageStates[i].texture = nullptr;
+		result->pageStates[i].loaded = false;
+		result->pageStates[i].inUse = false;
 	}
 	return (spine_atlas) result;
 }
@@ -272,13 +295,144 @@ utf8 *spine_atlas_get_error(spine_atlas atlas) {
 void spine_atlas_dispose(spine_atlas atlas) {
 	if (!atlas) return;
 	_spine_atlas *_atlas = (_spine_atlas *) atlas;
-	if (_atlas->atlas) delete (Atlas *) _atlas->atlas;
-	if (_atlas->error) free(_atlas->error);
+	
+	// Unload all textures
+	Atlas* atlasObj = (Atlas*)_atlas->atlas;
 	for (int i = 0; i < _atlas->numImagePaths; i++) {
+		if (_atlas->pageStates[i].loaded) {
+			// Only unload if we have a texture and it's been loaded
+			AtlasPage* page = atlasObj->getPages()[i];
+			if (page && page->texture) {
+				callbackLoader.unload(page->texture);
+			}
+		}
 		free(_atlas->imagePaths[i]);
 	}
+	
+	SpineExtension::free(_atlas->pageStates, __FILE__, __LINE__);
 	SpineExtension::free(_atlas->imagePaths, __FILE__, __LINE__);
+	if (_atlas->error) SpineExtension::free(_atlas->error, __FILE__, __LINE__);
+	delete (Atlas *) _atlas->atlas;
 	SpineExtension::free(_atlas, __FILE__, __LINE__);
+}
+
+// New functions to check and load page textures on demand
+SPINE_CPP_LITE_EXPORT void spine_atlas_load_page(spine_atlas atlas, int32_t pageIndex, spine_texture_loader_load_func load) {
+	if (atlas == nullptr || pageIndex < 0 || pageIndex >= ((_spine_atlas*)atlas)->numImagePaths) return;
+	
+	_spine_atlas* _atlas = (_spine_atlas*)atlas;
+	spine_atlas_page_state* state = &_atlas->pageStates[pageIndex];
+	
+	if (state->loaded) return; // Already loaded
+	
+	Atlas* atlasObj = (Atlas*)_atlas->atlas;
+	AtlasPage* page = atlasObj->getPages()[pageIndex];
+	
+	// Load the texture 
+	utf8* path = _atlas->imagePaths[pageIndex];
+	state->texture = load(path);
+	state->loaded = true;
+	page->texture = state->texture; // Update the actual atlas page texture
+}
+
+SPINE_CPP_LITE_EXPORT void spine_atlas_unload_page(spine_atlas atlas, int32_t pageIndex, spine_texture_loader_unload_func unload) {
+	if (atlas == nullptr || pageIndex < 0 || pageIndex >= ((_spine_atlas*)atlas)->numImagePaths) return;
+	
+	_spine_atlas* _atlas = (_spine_atlas*)atlas;
+	spine_atlas_page_state* state = &_atlas->pageStates[pageIndex];
+	
+	if (!state->loaded || state->inUse) return; // Don't unload if not loaded or in use
+	
+	// Unload the texture
+	unload(state->texture);
+	state->texture = nullptr;
+	state->loaded = false;
+	
+	// Update the atlas page
+	Atlas* atlasObj = (Atlas*)_atlas->atlas;
+	atlasObj->getPages()[pageIndex]->texture = nullptr;
+}
+
+SPINE_CPP_LITE_EXPORT void spine_atlas_mark_page_in_use(spine_atlas atlas, int32_t pageIndex, spine_bool inUse) {
+	if (atlas == nullptr || pageIndex < 0 || pageIndex >= ((_spine_atlas*)atlas)->numImagePaths) return;
+	
+	_spine_atlas* _atlas = (_spine_atlas*)atlas;
+	_atlas->pageStates[pageIndex].inUse = inUse;
+}
+
+SPINE_CPP_LITE_EXPORT spine_bool spine_atlas_is_page_loaded(spine_atlas atlas, int32_t pageIndex) {
+	if (atlas == nullptr || pageIndex < 0 || pageIndex >= ((_spine_atlas*)atlas)->numImagePaths) return false;
+	
+	_spine_atlas* _atlas = (_spine_atlas*)atlas;
+	return _atlas->pageStates[pageIndex].loaded;
+}
+
+SPINE_CPP_LITE_EXPORT spine_bool spine_atlas_is_page_in_use(spine_atlas atlas, int32_t pageIndex) {
+	if (atlas == nullptr || pageIndex < 0 || pageIndex >= ((_spine_atlas*)atlas)->numImagePaths) return false;
+	
+	_spine_atlas* _atlas = (_spine_atlas*)atlas;
+	return _atlas->pageStates[pageIndex].inUse;
+}
+
+// New function to mark used pages based on the current skin
+SPINE_CPP_LITE_EXPORT void spine_skeleton_mark_skin_atlas_pages(spine_skeleton skeleton, spine_atlas atlas) {
+	if (skeleton == nullptr || atlas == nullptr) return;
+	
+	Skeleton* _skeleton = (Skeleton*)skeleton;
+	Skin* activeSkin = _skeleton->getSkin();
+	if (!activeSkin) return;
+	
+	// First, mark all pages as not in use
+	_spine_atlas* _atlas = (_spine_atlas*)atlas;
+	for (int i = 0; i < _atlas->numImagePaths; i++) {
+		_atlas->pageStates[i].inUse = false;
+	}
+	
+	// Iterate through all attachments in the active skin and mark their atlas pages as in use
+	Atlas* atlasObj = (Atlas*)_atlas->atlas;
+	
+	// This part requires iteration through skin attachments and checking which atlas page they use
+	for (size_t i = 0; i < _skeleton->getSlots().size(); i++) {
+		Slot* slot = _skeleton->getSlots()[i];
+		if (!slot) continue;
+		
+		Attachment* attachment = slot->getAttachment();
+		if (!attachment) continue;
+		
+		// For each attachment, get its atlas region and mark the page as in use
+		if (attachment->getRTTI().isExactly(RegionAttachment::rtti)) {
+			RegionAttachment* regionAttachment = (RegionAttachment*)attachment;
+			AtlasRegion* region = (AtlasRegion*)regionAttachment->getRendererObject();
+			if (region && region->page) {
+				// Find the page index in the atlas
+				for (int j = 0; j < _atlas->numImagePaths; j++) {
+					if (atlasObj->getPages()[j] == region->page) {
+						_atlas->pageStates[j].inUse = true;
+						break;
+					}
+				}
+			}
+		} else if (attachment->getRTTI().isExactly(MeshAttachment::rtti)) {
+			MeshAttachment* meshAttachment = (MeshAttachment*)attachment;
+			AtlasRegion* region = (AtlasRegion*)meshAttachment->getRendererObject();
+			if (region && region->page) {
+				// Find the page index in the atlas
+				for (int j = 0; j < _atlas->numImagePaths; j++) {
+					if (atlasObj->getPages()[j] == region->page) {
+						_atlas->pageStates[j].inUse = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+}
+
+// Enhance spine_skeleton_set_skin to clean up unused atlas pages
+void spine_skeleton_set_skin(spine_skeleton skeleton, spine_skin skin) {
+	if (skeleton == nullptr) return;
+	Skeleton* _skeleton = (Skeleton*)skeleton;
+	_skeleton->setSkin((Skin*)skin);
 }
 
 // SkeletonData
@@ -4622,6 +4776,7 @@ void spine_texture_region_set_v(spine_texture_region textureRegion, float v) {
 	TextureRegion *_region = (TextureRegion *) textureRegion;
 	_region->v = v;
 }
+
 float spine_texture_region_get_u2(spine_texture_region textureRegion) {
 	if (textureRegion == nullptr) return 0;
 	TextureRegion *_region = (TextureRegion *) textureRegion;
@@ -4838,3 +4993,5 @@ float *spine_polygon_get_vertices(spine_polygon polygon) {
 	if (polygon == nullptr) return 0;
 	return ((Polygon *) polygon)->_vertices.buffer();
 }
+```
+```cpp

@@ -214,13 +214,20 @@ SPINE_CPP_LITE_EXPORT float spine_vector_get_x(spine_vector vector);
 SPINE_CPP_LITE_EXPORT float spine_vector_get_y(spine_vector vector);
 
 SPINE_CPP_LITE_EXPORT spine_atlas spine_atlas_load(const utf8 *atlasData);
-// @ignore
 SPINE_CPP_LITE_EXPORT spine_atlas spine_atlas_load_callback(const utf8 *atlasData, const utf8 *atlasDir, spine_texture_loader_load_func load, spine_texture_loader_unload_func unload);
 SPINE_CPP_LITE_EXPORT int32_t spine_atlas_get_num_image_paths(spine_atlas atlas);
 SPINE_CPP_LITE_EXPORT utf8 *spine_atlas_get_image_path(spine_atlas atlas, int32_t index);
 SPINE_CPP_LITE_EXPORT spine_bool spine_atlas_is_pma(spine_atlas atlas);
 SPINE_CPP_LITE_EXPORT utf8 *spine_atlas_get_error(spine_atlas atlas);
 SPINE_CPP_LITE_EXPORT void spine_atlas_dispose(spine_atlas atlas);
+
+// New functions for on-demand texture loading
+SPINE_CPP_LITE_EXPORT void spine_atlas_load_page(spine_atlas atlas, int32_t pageIndex, spine_texture_loader_load_func load);
+SPINE_CPP_LITE_EXPORT void spine_atlas_unload_page(spine_atlas atlas, int32_t pageIndex, spine_texture_loader_unload_func unload);
+SPINE_CPP_LITE_EXPORT void spine_atlas_mark_page_in_use(spine_atlas atlas, int32_t pageIndex, spine_bool inUse);
+SPINE_CPP_LITE_EXPORT spine_bool spine_atlas_is_page_loaded(spine_atlas atlas, int32_t pageIndex);
+SPINE_CPP_LITE_EXPORT spine_bool spine_atlas_is_page_in_use(spine_atlas atlas, int32_t pageIndex);
+SPINE_CPP_LITE_EXPORT void spine_skeleton_mark_skin_atlas_pages(spine_skeleton skeleton, spine_atlas atlas);
 
 // @ignore
 SPINE_CPP_LITE_EXPORT spine_skeleton_data_result spine_skeleton_data_load_json(spine_atlas atlas, const utf8 *skeletonData);
@@ -1016,7 +1023,6 @@ SPINE_CPP_LITE_EXPORT void spine_physics_constraint_reset_fully(spine_physics_co
 SPINE_CPP_LITE_EXPORT void spine_physics_constraint_update(spine_physics_constraint data, spine_physics physics);
 SPINE_CPP_LITE_EXPORT void spine_physics_constraint_translate(spine_physics_constraint data, float x, float y);
 SPINE_CPP_LITE_EXPORT void spine_physics_constraint_rotate(spine_physics_constraint data, float x, float y, float degrees);
-
 
 // OMITTED copy()
 SPINE_CPP_LITE_EXPORT void spine_sequence_apply(spine_sequence sequence, spine_slot slot, spine_attachment attachment);

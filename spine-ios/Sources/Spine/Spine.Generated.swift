@@ -3167,6 +3167,11 @@ public final class Skeleton: NSObject {
     public func setSkinByName(skinName: String?) {
         spine_skeleton_set_skin_by_name(wrappee, skinName)
     }
+    
+    /// Marks all atlas pages used by the current skin as in use and optionally unloads unused pages
+    public func markSkinAtlasPages(atlas: Atlas, cleanupUnused: Bool = true) {
+        spine_skeleton_mark_skin_atlas_pages(wrappee, atlas.wrappee, cleanupUnused ? 1 : 0)
+    }
 
 }
 
@@ -3393,6 +3398,33 @@ public final class Atlas: NSObject {
 
     public var error: String? {
         return spine_atlas_get_error(wrappee).flatMap { String(cString: $0) }
+    }
+    
+    /// Loads a specific atlas page texture on demand
+    @discardableResult
+    public func loadPage(pageIndex: Int32) -> Bool {
+        return spine_atlas_load_page(wrappee, pageIndex) != 0
+    }
+    
+    /// Unloads a specific atlas page texture if it is not in use
+    @discardableResult
+    public func unloadPage(pageIndex: Int32) -> Bool {
+        return spine_atlas_unload_page(wrappee, pageIndex) != 0
+    }
+    
+    /// Checks if a specific atlas page texture is loaded
+    public func isPageLoaded(pageIndex: Int32) -> Bool {
+        return spine_atlas_is_page_loaded(wrappee, pageIndex) != 0
+    }
+    
+    /// Checks if a specific atlas page is marked as in use
+    public func isPageInUse(pageIndex: Int32) -> Bool {
+        return spine_atlas_is_page_in_use(wrappee, pageIndex) != 0
+    }
+    
+    /// Marks a specific atlas page as in use or not
+    public func markPageInUse(pageIndex: Int32, inUse: Bool) {
+        spine_atlas_mark_page_in_use(wrappee, pageIndex, inUse ? 1 : 0)
     }
 
     @discardableResult
@@ -3897,4 +3929,3 @@ public final class Skin: NSObject {
     }
 
 }
-

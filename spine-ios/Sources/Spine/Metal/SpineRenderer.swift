@@ -23,8 +23,10 @@ protocol SpineRendererDataSource: AnyObject {
 internal final class SpineRenderer: NSObject, MTKViewDelegate {
     
     private let device: MTLDevice
-    private let textures: [MTLTexture]
+    private var textures: [MTLTexture?]
+    private let atlasPages: [UIImage]
     private let commandQueue: MTLCommandQueue
+    private let textureLoader: MTKTextureLoader
     
     private var sizeInPoints: CGSize = .zero
     private var viewPortSize = vector_uint2(0, 0)
@@ -56,6 +58,9 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
     ) throws {
         self.device = device
         self.commandQueue = commandQueue
+        self.atlasPages = atlasPages
+        self.textures = atlasPages.map { _ in nil }
+        self.textureLoader = MTKTextureLoader(device: device)
         
         let bundle: Bundle
         #if SWIFT_PACKAGE // SPM
@@ -66,19 +71,6 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
         #endif
         
         let defaultLibrary = try device.makeDefaultLibrary(bundle: bundle)
-        let textureLoader = MTKTextureLoader(device: device)
-        textures = try atlasPages
-            .compactMap { $0.cgImage }
-            .map {
-                try textureLoader.newTexture(
-                    cgImage: $0,
-                    options: [
-                        .textureUsage: NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
-                        .SRGB: false,
-                    ]
-                )
-            }
-        
         let blendModes = [
             SPINE_BLEND_MODE_NORMAL,
             SPINE_BLEND_MODE_ADDITIVE,
@@ -258,8 +250,17 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
             
             let textureIndex = Int(renderCommand.atlasPage)
             if textures.indices.contains(textureIndex) {
+                if textures[textureIndex] == nil {
+                    textures[textureIndex] = try? textureLoader.newTexture(
+                        cgImage: atlasPages[textureIndex].cgImage!,
+                        options: [
+                            .textureUsage: NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
+                            .SRGB: false,
+                        ]
+                    )
+                }
                 renderEncoder.setFragmentTexture(
-                    textures[textureIndex],
+                    textures[textureIndex]!,
                     index: Int(SpineTextureIndexBaseColor.rawValue)
                 )
             }
