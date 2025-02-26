@@ -50,6 +50,12 @@ struct EventListener : public AnimationStateListenerObject {
 	}
 };
 
+typedef struct _spine_atlas_page_state {
+	void* texture;
+	bool loaded;
+	bool inUse;
+} spine_atlas_page_state;
+
 typedef struct _spine_atlas {
 	void *atlas;
 	utf8 **imagePaths;
@@ -57,12 +63,6 @@ typedef struct _spine_atlas {
 	utf8 *error;
 	spine_atlas_page_state* pageStates; // NEW: Add state tracking for each atlas page
 } _spine_atlas;
-
-typedef struct _spine_atlas_page_state {
-	void* texture;
-	bool loaded;
-	bool inUse;
-} spine_atlas_page_state;
 
 typedef struct _spine_skeleton_data_result {
 	spine_skeleton_data skeletonData;
@@ -426,13 +426,6 @@ SPINE_CPP_LITE_EXPORT void spine_skeleton_mark_skin_atlas_pages(spine_skeleton s
 			}
 		}
 	}
-}
-
-// Enhance spine_skeleton_set_skin to clean up unused atlas pages
-void spine_skeleton_set_skin(spine_skeleton skeleton, spine_skin skin) {
-	if (skeleton == nullptr) return;
-	Skeleton* _skeleton = (Skeleton*)skeleton;
-	_skeleton->setSkin((Skin*)skin);
 }
 
 // SkeletonData
