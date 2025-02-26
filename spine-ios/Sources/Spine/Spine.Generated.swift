@@ -3080,6 +3080,10 @@ public final class Skeleton: NSObject {
         }
     }
 
+    public func markSkinAtlasPages(atlas: Atlas) {
+        spine_skeleton_mark_skin_atlas_pages(wrappee, atlas.wrappee)
+    }
+
     public func updateCache() {
         spine_skeleton_update_cache(wrappee)
     }
@@ -3433,6 +3437,11 @@ public final class Atlas: NSObject {
     }
 
     @discardableResult
+    public func loadCallback(atlasData: String?, atlasDir: String?, load: TextureLoaderLoadFunc, unload: TextureLoaderUnloadFunc) -> Atlas {
+        return .init(spine_atlas_load_callback(atlasData, atlasDir, load.wrappee, unload.wrappee))
+    }
+
+    @discardableResult
     public func getImagePath(index: Int32) -> String? {
         return spine_atlas_get_image_path(wrappee, index).flatMap { String(cString: $0) }
     }
@@ -3441,6 +3450,28 @@ public final class Atlas: NSObject {
         if disposed { return }
         disposed = true
         spine_atlas_dispose(wrappee)
+    }
+
+    public func loadPage(pageIndex: Int32, load: TextureLoaderLoadFunc) {
+        spine_atlas_load_page(wrappee, pageIndex, load.wrappee)
+    }
+
+    public func unloadPage(pageIndex: Int32, unload: TextureLoaderUnloadFunc) {
+        spine_atlas_unload_page(wrappee, pageIndex, unload.wrappee)
+    }
+
+    public func markPageInUse(pageIndex: Int32, inUse: Bool) {
+        spine_atlas_mark_page_in_use(wrappee, pageIndex, inUse ? -1 : 0)
+    }
+
+    @discardableResult
+    public func isPageLoaded(pageIndex: Int32) -> Bool {
+        return spine_atlas_is_page_loaded(wrappee, pageIndex) != 0
+    }
+
+    @discardableResult
+    public func isPageInUse(pageIndex: Int32) -> Bool {
+        return spine_atlas_is_page_in_use(wrappee, pageIndex) != 0
     }
 
 }
