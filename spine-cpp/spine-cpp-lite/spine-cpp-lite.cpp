@@ -401,7 +401,7 @@ SPINE_CPP_LITE_EXPORT void spine_skeleton_mark_skin_atlas_pages(spine_skeleton s
 		
 		Vector<AtlasRegion *> regions = atlasObj->getRegions();
 		for (size_t j = 0; j < regions.size(); j++) {
-			for (size_t k = 0; k < regions[j]->names; k++) {
+			for (size_t k = 0; k < regions[j]->names.size(); k++) {
 				if (attachment->getName() == regions[j]->names[k]) {
 					_atlas->pageStates[j].inUse = true;
 				}
