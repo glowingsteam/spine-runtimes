@@ -17,12 +17,14 @@ supported_types_to_swift_types = {
     'utf8 *': 'String?',
     'int32_t *': 'Int32?',
     'uint16_t *': 'UInt16',
-    'spine_bool': 'Bool'
+    'spine_bool': 'Bool',
+    'spine_texture_loader_load_func': 'TextureLoaderLoadFunc',
+    'spine_texture_loader_unload_func': 'TextureLoaderUnloadFunc'
 }
 
 def read_spine_types(data):
     types_start = data.find('// @start: opaque_types') + len('// @start: opaque_types')
-    types_end = data.find('// @end: paque_types')
+    types_end = data.find('// @end: opaque_types')
     types_section = data[types_start:types_end]
     return re.findall(r'SPINE_OPAQUE_TYPE\(([^)]+)\)', types_section)
 
