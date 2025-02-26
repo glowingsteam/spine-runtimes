@@ -399,29 +399,11 @@ SPINE_CPP_LITE_EXPORT void spine_skeleton_mark_skin_atlas_pages(spine_skeleton s
 		Attachment* attachment = slot->getAttachment();
 		if (!attachment) continue;
 		
-		// For each attachment, get its atlas region and mark the page as in use
-		if (attachment->getRTTI().isExactly(RegionAttachment::rtti)) {
-			RegionAttachment* regionAttachment = (RegionAttachment*)attachment;
-			AtlasRegion* region = (AtlasRegion*)regionAttachment->getRendererObject();
-			if (region && region->page) {
-				// Find the page index in the atlas
-				for (int j = 0; j < _atlas->numImagePaths; j++) {
-					if (atlasObj->getPages()[j] == region->page) {
-						_atlas->pageStates[j].inUse = true;
-						break;
-					}
-				}
-			}
-		} else if (attachment->getRTTI().isExactly(MeshAttachment::rtti)) {
-			MeshAttachment* meshAttachment = (MeshAttachment*)attachment;
-			AtlasRegion* region = (AtlasRegion*)meshAttachment->getRendererObject();
-			if (region && region->page) {
-				// Find the page index in the atlas
-				for (int j = 0; j < _atlas->numImagePaths; j++) {
-					if (atlasObj->getPages()[j] == region->page) {
-						_atlas->pageStates[j].inUse = true;
-						break;
-					}
+		Vector<AtlasRegion *> regions = atlasObj->getRegions();
+		for (size_t j = 0; j < regions.size(); j++) {
+			for (size_t k = 0; k < regions[j]->names; k++) {
+				if (attachment->getName() == regions[j]->names[k]) {
+					_atlas->pageStates[j].inUse = true;
 				}
 			}
 		}
