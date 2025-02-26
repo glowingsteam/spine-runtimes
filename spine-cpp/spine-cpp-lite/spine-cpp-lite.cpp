@@ -4968,5 +4968,3 @@ float *spine_polygon_get_vertices(spine_polygon polygon) {
 	if (polygon == nullptr) return 0;
 	return ((Polygon *) polygon)->_vertices.buffer();
 }
-```
-```cpp
