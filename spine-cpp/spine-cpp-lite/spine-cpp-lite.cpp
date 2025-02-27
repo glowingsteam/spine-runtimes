@@ -192,7 +192,7 @@ class LiteTextureLoad : public TextureLoader {
 };
 LiteTextureLoad liteLoader;
 
-// CHIRU - This is where the atlas is loaded
+// AN - This is where the atlas is loaded
 spine_atlas spine_atlas_load(const utf8 *atlasData) {
 	if (!atlasData) return nullptr;
 	int32_t length = (int32_t) strlen(atlasData);
@@ -206,9 +206,15 @@ spine_atlas spine_atlas_load(const utf8 *atlasData) {
 	result->atlas = atlas;
 	result->numImagePaths = (int32_t) atlas->getPages().size();
 	result->imagePaths = SpineExtension::calloc<utf8 *>(result->numImagePaths, __FILE__, __LINE__);
-	for (int i = 0; i < result->numImagePaths; i++) {
-		result->imagePaths[i] = (utf8 *) strdup(atlas->getPages()[i]->texturePath.buffer());
-	}
+
+	// AN_FIX - Dynamic Loading
+	//for (int i = 0; i < result->numImagePaths; i++) {
+	//	result->imagePaths[i] = (utf8 *) strdup(atlas->getPages()[i]->texturePath.buffer());
+	//}
+
+	
+	// AN_FIX_END - Dynamic Loading
+
 	return (spine_atlas) result;
 }
 
