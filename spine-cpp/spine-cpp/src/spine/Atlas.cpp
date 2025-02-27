@@ -99,6 +99,26 @@ Vector<AtlasRegion *> &Atlas::getRegions() {
 	return _regions;
 }
 
+// CHIRU_FIX Dynamic Loading
+void Atlas::invalidatePages()
+{
+	for (size_t i = 0, n = _pages.size(); i < n; ++i)
+		_pages[i]->inUse = false;
+}
+
+void Atlas::reloadUsedPages()
+{
+	for (size_t i = 0, n = _pages.size(); i < n; ++i)
+	{
+		if (_pages[i]->isLoaded && !_pages[i]->inUse)
+			_textureLoader->unload(_pages[i]->texture);
+
+		else if (!_pages[i]->isLoaded && _pages[i]->inUse)
+			_textureLoader->load(*_pages[i], _pages[i]->texturePath);
+	}
+}
+// CHIRU_FIX_END Dynamic Loading
+
 struct SimpleString {
 	char *start;
 	char *end;
