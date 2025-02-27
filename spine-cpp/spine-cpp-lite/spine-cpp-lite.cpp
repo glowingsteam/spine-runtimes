@@ -199,7 +199,7 @@ spine_atlas spine_atlas_load(const utf8 *atlasData) {
 
 // AN_FIX - Dynamic Loading
 	//auto atlas = new (__FILE__, __LINE__) Atlas(atlasData, length, "", &liteLoader, true);
-	auto atlas = new (__FILE__, __LINE__) Atlas(atlasData, length, "", &liteLoader, false);
+	auto atlas = new (__FILE__, __LINE__) Atlas(atlasData, length, "", &liteLoader, true);
 // AN_FIX_END - Dynamic Loading
 
 	_spine_atlas *result = SpineExtension::calloc<_spine_atlas>(1, __FILE__, __LINE__);
@@ -208,9 +208,9 @@ spine_atlas spine_atlas_load(const utf8 *atlasData) {
 	result->imagePaths = SpineExtension::calloc<utf8 *>(result->numImagePaths, __FILE__, __LINE__);
 
 	// AN_FIX - Dynamic Loading
-	for (int i = 0; i < result->numImagePaths; i++) {
-		result->imagePaths[i] = (utf8 *) strdup(atlas->getPages()[i]->texturePath.buffer());
-	}
+	//for (int i = 0; i < result->numImagePaths; i++) {
+	//	result->imagePaths[i] = (utf8 *) strdup(atlas->getPages()[i]->texturePath.buffer());
+	//}
 
 
 	// AN_FIX_END - Dynamic Loading
