@@ -99,7 +99,7 @@ Vector<AtlasRegion *> &Atlas::getRegions() {
 	return _regions;
 }
 
-// CHIRU_FIX Dynamic Loading
+// AN_FIX Dynamic Loading
 void Atlas::invalidatePages()
 {
 	for (size_t i = 0, n = _pages.size(); i < n; ++i)
@@ -117,7 +117,7 @@ void Atlas::reloadUsedPages()
 			_textureLoader->load(*_pages[i], _pages[i]->texturePath);
 	}
 }
-// CHIRU_FIX_END Dynamic Loading
+// AN_FIX_END Dynamic Loading
 
 struct SimpleString {
 	char *start;

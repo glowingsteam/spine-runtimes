@@ -87,18 +87,18 @@ namespace spine {
         int index;
         void *texture;
 		
-		// CHIRU_FIX Dynamic Loading
+		// AN_FIX Dynamic Loading
 		bool inUse;
 		bool isLoaded;
-		// CHIRU_FIX_END Dynamic Loading
+		// AN_FIX_END Dynamic Loading
 
 		explicit AtlasPage(const String &inName) : name(inName), format(Format_RGBA8888),
 												   minFilter(TextureFilter_Nearest),
 												   magFilter(TextureFilter_Nearest), uWrap(TextureWrap_ClampToEdge),
 												   vWrap(TextureWrap_ClampToEdge), width(0), height(0), pma(false), index(0), texture(NULL), 
-												   // CHIRU_FIX Dynamic Loading
+												   // AN_FIX Dynamic Loading
 												   inUse(false), isLoaded(false) {
-													// CHIRU_FIX_END Dynamic Loading
+													// AN_FIX_END Dynamic Loading
 		}
 	};
 
@@ -135,11 +135,11 @@ namespace spine {
 
 		Vector<AtlasRegion *> &getRegions();
 
-		// CHIRU_FIX Dynamic Loading
+		// AN_FIX Dynamic Loading
 		void invalidatePages();
 
 		void reloadUsedPages();
-		// CHIRU_FIX_END Dynamic Loading
+		// AN_FIX_END Dynamic Loading
 
 	private:
 		Vector<AtlasPage *> _pages;
