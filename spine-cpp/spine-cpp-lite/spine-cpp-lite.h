@@ -221,6 +221,7 @@ SPINE_CPP_LITE_EXPORT utf8 *spine_atlas_get_image_path(spine_atlas atlas, int32_
 SPINE_CPP_LITE_EXPORT spine_bool spine_atlas_is_pma(spine_atlas atlas);
 SPINE_CPP_LITE_EXPORT utf8 *spine_atlas_get_error(spine_atlas atlas);
 SPINE_CPP_LITE_EXPORT void spine_atlas_dispose(spine_atlas atlas);
+SPINE_CPP_LITE_EXPORT void spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool invalidateAll);
 
 // @ignore
 SPINE_CPP_LITE_EXPORT spine_skeleton_data_result spine_skeleton_data_load_json(spine_atlas atlas, const utf8 *skeletonData);
