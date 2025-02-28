@@ -3411,6 +3411,9 @@ public final class Atlas: NSObject {
         spine_atlas_dispose(wrappee)
     }
 
+    public func reloadUsedPages(skin: Skin, unloadOld: Bool) {
+        spine_atlas_reload_used_pages(self.wrappee, skin.wrappee, unloadOld);
+    }
 }
 
 @objc(SpineColor)
