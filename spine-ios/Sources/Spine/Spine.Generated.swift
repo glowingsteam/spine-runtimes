@@ -3412,7 +3412,7 @@ public final class Atlas: NSObject {
     }
 
     public func reloadUsedPages(skin: Skin, unloadOld: Bool) {
-        spine_atlas_reload_used_pages(self.wrappee, skin.wrappee, unloadOld);
+        spine_reload_used_textures(self.wrappee, skin.wrappee, unloadOld);
     }
 }
 
