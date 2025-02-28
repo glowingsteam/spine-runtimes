@@ -88,6 +88,12 @@ public extension Atlas {
         
         return (Atlas(atlas), atlasPages)
     }
+
+    // AN_FIX Dynamic Loading - iOS Implementation
+    public func reloadUsedPages(Skin: skin, Bool: unloadOld) {
+        spine_atlas_reload_used_pages(self.wrappee, skin, unloadOld);
+    }
+    // AN_FIX_END Dynamic Loading
 }
 
 public extension SkeletonData {
