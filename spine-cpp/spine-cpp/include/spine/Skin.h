@@ -106,6 +106,10 @@ namespace spine {
 
 			Entries getEntries();
 
+// AN_FIX Dynamic Loading - Add getAttachmentNames to AttachmentMap
+			Vector<String> getAttachmentNames();
+// AN_FIX_END Dynamic Loading
+
 		protected:
 			AttachmentMap();
 
@@ -149,6 +153,10 @@ namespace spine {
 		void copySkin(Skin *other);
 
 		AttachmentMap::Entries getAttachments();
+
+// AN_FIX Dynamic Loading - getAllAttachmentNames
+		Vector<String> getAllAttachmentNames();
+// AN_FIX_END Dynamic Loading
 
 		Vector<BoneData *> &getBones();
 

@@ -88,6 +88,22 @@ Skin::AttachmentMap::Entries Skin::AttachmentMap::getEntries() {
 	return Skin::AttachmentMap::Entries(_buckets);
 }
 
+// AN_FIX Dynamic Loading - AttachmentMap function definition
+Vector<String> Skin::AttachmentMap::getAttachmentNames() {
+	Vector<String> attachmentNames;
+
+	for (int i = 0, n = _buckets.size(); i < n; i++)
+	{
+		for (int j = 0, m = _buckets[i].size(); j < m; j++)
+		{
+			attachmentNames.add(_buckets[i][j]._name);
+		}
+	}
+
+	return attachmentNames;
+}
+// AN_FIX_END Dynamic Loading
+
 Skin::Skin(const String &name) : _name(name), _attachments(), _color(0.99607843f, 0.61960787f, 0.30980393f, 1) {
 	assert(_name.length() > 0);
 }
@@ -138,6 +154,12 @@ const String &Skin::getName() {
 Skin::AttachmentMap::Entries Skin::getAttachments() {
 	return _attachments.getEntries();
 }
+
+// AN_FIX Dynamic Loading - Skin Function Definitions
+Vector<String> Skin::getAllAttachmentNames() {
+	return _attachments.getAttachmentNames();
+}
+// AN_FIX_END Dynamic Loading
 
 void Skin::attachAll(Skeleton &skeleton, Skin &oldSkin) {
 	Vector<Slot *> &slots = skeleton.getSlots();

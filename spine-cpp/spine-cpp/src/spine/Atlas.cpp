@@ -99,11 +99,37 @@ Vector<AtlasRegion *> &Atlas::getRegions() {
 	return _regions;
 }
 
-// AN_FIX Dynamic Loading
+// AN_FIX Dynamic Loading - Atlas Function Definitions
 void Atlas::invalidatePages()
 {
 	for (size_t i = 0, n = _pages.size(); i < n; ++i)
 		_pages[i]->inUse = false;
+}
+
+void Atlas::validateAttachments(Vector<String> attachmentNames)
+{
+	for (size_t i = 0, n = attachmentNames.size(); i < n; ++i)
+	{
+		AtlasRegion *region = findRegion(attachmentNames[i]);
+		if (region == nullptr) continue;
+
+		region->inUse = true;
+	}
+}
+
+Vector<String> Atlas::getInUseTexturePaths()
+{
+	Vector<String> loadedTexturePaths;
+
+	for (size_t i = 0, n = _regions.size(); i < n; ++i)
+	{
+		if (_regions[i]->inUse)
+		{
+			loadedTexturePaths.add(_regions[i]->page->texturePath);
+		}
+	}
+
+	return loadedTexturePaths;
 }
 
 void Atlas::reloadUsedPages()

@@ -87,7 +87,7 @@ namespace spine {
         int index;
         void *texture;
 		
-		// AN_FIX Dynamic Loading
+		// AN_FIX Dynamic Loading - Tag pages with inUse 
 		bool inUse;
 		bool isLoaded;
 		// AN_FIX_END Dynamic Loading
@@ -96,7 +96,7 @@ namespace spine {
 												   minFilter(TextureFilter_Nearest),
 												   magFilter(TextureFilter_Nearest), uWrap(TextureWrap_ClampToEdge),
 												   vWrap(TextureWrap_ClampToEdge), width(0), height(0), pma(false), index(0), texture(NULL), 
-												   // AN_FIX Dynamic Loading
+												   // AN_FIX Dynamic Loading - Page Constructor
 												   inUse(false), isLoaded(false) {
 													// AN_FIX_END Dynamic Loading
 		}
@@ -112,6 +112,11 @@ namespace spine {
 		Vector<int> pads;
 		Vector <String> names;
 		Vector<float> values;
+
+		// AN_FIX Dynamic Loading - Tag Regions In Use
+		bool inUse;
+		bool isLoaded;
+		// AN_FIX_END Dynamic Loading
 	};
 
 	class TextureLoader;
@@ -135,8 +140,12 @@ namespace spine {
 
 		Vector<AtlasRegion *> &getRegions();
 
-		// AN_FIX Dynamic Loading
+		// AN_FIX Dynamic Loading - Atlas Functions
 		void invalidatePages();
+
+		void validateAttachments(Vector<String> attachmentNames);
+
+		Vector<String> getInUseTexturePaths();
 
 		void reloadUsedPages();
 		// AN_FIX_END Dynamic Loading

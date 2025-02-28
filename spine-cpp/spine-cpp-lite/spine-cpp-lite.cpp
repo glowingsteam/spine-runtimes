@@ -197,17 +197,18 @@ spine_atlas spine_atlas_load(const utf8 *atlasData) {
 	if (!atlasData) return nullptr;
 	int32_t length = (int32_t) strlen(atlasData);
 
-// AN_FIX - Dynamic Loading
-	//auto atlas = new (__FILE__, __LINE__) Atlas(atlasData, length, "", &liteLoader, true);
 	auto atlas = new (__FILE__, __LINE__) Atlas(atlasData, length, "", &liteLoader, true);
-// AN_FIX_END - Dynamic Loading
 
 	_spine_atlas *result = SpineExtension::calloc<_spine_atlas>(1, __FILE__, __LINE__);
 	result->atlas = atlas;
-	result->numImagePaths = (int32_t) atlas->getPages().size();
-	result->imagePaths = SpineExtension::calloc<utf8 *>(result->numImagePaths, __FILE__, __LINE__);
 
-	// AN_FIX - Dynamic Loading
+	// AN_FIX - Dynamic Loading - Set Image Paths
+	//result->numImagePaths = (int32_t) atlas->getPages().size();
+	result->numImagePaths = (int32_t) 0;
+	// AN_FIX_END - Dynamic Loading
+
+	// AN_FIX - Dynamic Loading - Disable Automatic Loading
+	//result->imagePaths = SpineExtension::calloc<utf8 *>(result->numImagePaths, __FILE__, __LINE__);
 	//for (int i = 0; i < result->numImagePaths; i++) {
 	//	result->imagePaths[i] = (utf8 *) strdup(atlas->getPages()[i]->texturePath.buffer());
 	//}
@@ -292,6 +293,49 @@ void spine_atlas_dispose(spine_atlas atlas) {
 	SpineExtension::free(_atlas->imagePaths, __FILE__, __LINE__);
 	SpineExtension::free(_atlas, __FILE__, __LINE__);
 }
+
+// AN_FIX - Dynamic Loading - Reload Texture Function
+// Dynamic Loading
+void spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool invalidateAll)
+{
+	_spine_atlas *_spineAtlas = (_spine_atlas *) atlas;
+	Skin *_skin = (Skin *) skin;
+
+	if (_spineAtlas == nullptr) return;
+	if (_skin == nullptr) return;
+
+	Atlas *_atlas = static_cast<Atlas *>(((_spine_atlas *) atlas)->atlas);
+	if (invalidateAll)
+	{
+		// Invalidate all pages
+		_atlas->invalidatePages();
+
+		// If we already have some image paths
+		if (_spineAtlas->numImagePaths != 0)
+		{
+			// lets unload all of the loaded ones
+			for (int i = 0; i < _spineAtlas->numImagePaths; i++) {
+				free(_spineAtlas->imagePaths[i]);
+			}
+		}
+
+		// Reset our image path counter
+		_spineAtlas->numImagePaths = 0;
+	}
+
+	_atlas->validateAttachments(_skin->getAllAttachmentNames());
+	Vector<String> inUseTextures = _atlas->getInUseTexturePaths();
+	_spineAtlas->imagePaths = SpineExtension::calloc<utf8 *>(inUseTextures.size(), __FILE__, __LINE__);
+	for (int i = 0, n = inUseTextures.size(); i < n; i++)
+	{
+		_spineAtlas->imagePaths[i] = (utf8 *) strdup(inUseTextures[i].buffer());
+	}
+
+	_spineAtlas->numImagePaths += inUseTextures.size();
+	//_atlas.
+}
+// AN_FIX_END
+
 
 // SkeletonData
 
@@ -1231,6 +1275,8 @@ spine_bool spine_track_entry_is_next_ready(spine_track_entry entry) {
 
 // Skeleton
 
+
+// AN_FIX - This is the last step in drawing a skin
 void spine_skeleton_update_cache(spine_skeleton skeleton) {
 	if (skeleton == nullptr) return;
 	Skeleton *_skeleton = (Skeleton *) skeleton;
@@ -1251,6 +1297,7 @@ void spine_skeleton_update_world_transform_bone(spine_skeleton skeleton, spine_p
 	_skeleton->updateWorldTransform((spine::Physics) physics, _bone);
 }
 
+// AN_FIX - This is one of the last steps before the skin is drawn
 void spine_skeleton_set_to_setup_pose(spine_skeleton skeleton) {
 	if (skeleton == nullptr) return;
 	Skeleton *_skeleton = (Skeleton *) skeleton;
@@ -2999,6 +3046,7 @@ const utf8 *spine_skin_get_name(spine_skin skin) {
 	return (utf8 *) _skin->getName().buffer();
 }
 
+// AN_FIX - This is where skins are added
 void spine_skin_add_skin(spine_skin skin, spine_skin other) {
 	if (skin == nullptr) return;
 	if (other == nullptr) return;
@@ -4850,3 +4898,5 @@ float *spine_polygon_get_vertices(spine_polygon polygon) {
 	if (polygon == nullptr) return 0;
 	return ((Polygon *) polygon)->_vertices.buffer();
 }
+
+
