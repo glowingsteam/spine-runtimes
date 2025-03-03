@@ -3418,9 +3418,14 @@ public final class Atlas: NSObject {
     }
 
     public func debugNames(skin: Skin) -> String? {
-        let debugString = spine_get_debug_texture_loading(self.wrappee, skin.wrappee);
-        print("debugNames: \(String(describing: debugNames))");
-        return String(cString: debugString)
+        guard let debugString = spine_get_debug_texture_loading(self.wrappee, skin.wrappee) else {
+            print("debugNames: nil (no string returned)")
+            return nil
+        }
+        
+        let swiftString = String(cString: debugString)
+        print("debugNames: \(swiftString)")
+        return swiftString
     }
 }
 
