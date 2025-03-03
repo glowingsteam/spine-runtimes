@@ -113,7 +113,6 @@ void Atlas::validateAttachments(Vector<String> attachmentNames)
 		AtlasRegion *region = findRegion(attachmentNames[i]);
 		if (region == nullptr) continue;
 
-		region->inUse = true;
 		region->page->inUse = true;
 	}
 }
@@ -121,14 +120,6 @@ void Atlas::validateAttachments(Vector<String> attachmentNames)
 Vector<String> Atlas::getInUseTexturePaths()
 {
 	Vector<String> loadedTexturePaths;
-
-	for (size_t i = 0, n = _regions.size(); i < n; ++i)
-	{
-		if (_regions[i]->inUse)
-		{
-			loadedTexturePaths.add(_regions[i]->page->texturePath);
-		}
-	}
 
 	for (size_t i = 0, n = _pages.size(); i < n; ++i)
 	{
@@ -141,17 +132,6 @@ Vector<String> Atlas::getInUseTexturePaths()
 	return loadedTexturePaths;
 }
 
-void Atlas::reloadUsedPages()
-{
-	for (size_t i = 0, n = _pages.size(); i < n; ++i)
-	{
-		if (_pages[i]->isLoaded && !_pages[i]->inUse)
-			_textureLoader->unload(_pages[i]->texture);
-
-		else if (!_pages[i]->isLoaded && _pages[i]->inUse)
-			_textureLoader->load(*_pages[i], _pages[i]->texturePath);
-	}
-}
 // AN_FIX_END Dynamic Loading
 
 struct SimpleString {

@@ -112,11 +112,6 @@ namespace spine {
 		Vector<int> pads;
 		Vector <String> names;
 		Vector<float> values;
-
-		// AN_FIX Dynamic Loading - Tag Regions In Use
-		bool inUse;
-		bool isLoaded;
-		// AN_FIX_END Dynamic Loading
 	};
 
 	class TextureLoader;
@@ -146,8 +141,6 @@ namespace spine {
 		void validateAttachments(Vector<String> attachmentNames);
 
 		Vector<String> getInUseTexturePaths();
-
-		void reloadUsedPages();
 		// AN_FIX_END Dynamic Loading
 
 	private:

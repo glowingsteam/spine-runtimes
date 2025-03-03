@@ -200,6 +200,7 @@ SPINE_CPP_LITE_EXPORT int32_t spine_minor_version();
 SPINE_CPP_LITE_EXPORT void spine_enable_debug_extension(spine_bool enable);
 SPINE_CPP_LITE_EXPORT void spine_report_leaks();
 SPINE_CPP_LITE_EXPORT int32_t spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool invalidateAll); // AN_FIX Dynamic Loading - Export load textures
+SPINE_CPP_LITE_EXPORT const utf8 *spine_get_debug_texture_loading(); // AN_FIX Dynamic Loading - Debug strings
 
 SPINE_CPP_LITE_EXPORT float spine_color_get_r(spine_color color);
 SPINE_CPP_LITE_EXPORT float spine_color_get_g(spine_color color);

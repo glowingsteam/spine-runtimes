@@ -336,6 +336,23 @@ int32_t spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool inva
 	return _spineAtlas->numImagePaths;
 	//_atlas.
 }
+
+const utf8 *spine_get_debug_texture_loading(spine_atlas atlas, spine_skin skin)
+{
+    _spine_atlas *_spineAtlas = (_spine_atlas *) atlas;
+	Skin *_skin = (Skin *) skin;
+	Atlas *_atlas = static_cast<Atlas *>(((_spine_atlas *) atlas)->atlas);
+
+	if (_spineAtlas == nullptr) return 0;
+	if (_skin == nullptr) return 0;
+
+	String regionEntryName = _atlas->getRegions()[0]->names[0];
+	String skinAttachmentName = _skin->getAllAttachmentNames()[0];
+
+	String result = regionEntryName;
+	result.append(" ").append(skinAttachmentName.buffer());
+	return (utf8 *)strdup(result.buffer());
+}
 // AN_FIX_END
 
 
