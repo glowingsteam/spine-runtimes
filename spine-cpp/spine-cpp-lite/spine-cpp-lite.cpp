@@ -296,13 +296,13 @@ void spine_atlas_dispose(spine_atlas atlas) {
 
 // AN_FIX - Dynamic Loading - Reload Texture Function
 // Dynamic Loading
-void spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool invalidateAll)
+int32_t spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool invalidateAll)
 {
 	_spine_atlas *_spineAtlas = (_spine_atlas *) atlas;
 	Skin *_skin = (Skin *) skin;
 
-	if (_spineAtlas == nullptr) return;
-	if (_skin == nullptr) return;
+	if (_spineAtlas == nullptr) return 0;
+	if (_skin == nullptr) return 0;
 
 	Atlas *_atlas = static_cast<Atlas *>(((_spine_atlas *) atlas)->atlas);
 	if (invalidateAll)
@@ -332,6 +332,8 @@ void spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool invalid
 	}
 
 	_spineAtlas->numImagePaths += inUseTextures.size();
+
+	return _spineAtlas->numImagePaths;
 	//_atlas.
 }
 // AN_FIX_END

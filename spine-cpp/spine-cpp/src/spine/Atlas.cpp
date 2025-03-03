@@ -114,6 +114,7 @@ void Atlas::validateAttachments(Vector<String> attachmentNames)
 		if (region == nullptr) continue;
 
 		region->inUse = true;
+		region->page->inUse = true;
 	}
 }
 
@@ -126,6 +127,14 @@ Vector<String> Atlas::getInUseTexturePaths()
 		if (_regions[i]->inUse)
 		{
 			loadedTexturePaths.add(_regions[i]->page->texturePath);
+		}
+	}
+
+	for (size_t i = 0, n = _pages.size(); i < n; ++i)
+	{
+		if (_pages[i]->inUse)
+		{
+			loadedTexturePaths.add(_pages[i]->texturePath);
 		}
 	}
 

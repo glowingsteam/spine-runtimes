@@ -3411,8 +3411,10 @@ public final class Atlas: NSObject {
         spine_atlas_dispose(wrappee)
     }
 
-    public func reloadUsedPages(skin: Skin, unloadOld: Bool) {
-        spine_reload_used_textures(self.wrappee, skin.wrappee, unloadOld);
+    public func reloadUsedPages(skin: Skin, unloadOld: Bool) -> Int32 {
+        Int32 totalTextures = spine_reload_used_textures(self.wrappee, skin.wrappee, unloadOld)
+        NSLog("totalTextures: %d", totalTextures)
+        return totalTextures
     }
 }
 
