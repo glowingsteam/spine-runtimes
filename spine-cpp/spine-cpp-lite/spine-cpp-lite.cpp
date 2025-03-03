@@ -343,8 +343,11 @@ const utf8 *spine_get_debug_texture_loading(spine_atlas atlas, spine_skin skin)
 	Skin *_skin = (Skin *) skin;
 	Atlas *_atlas = static_cast<Atlas *>(((_spine_atlas *) atlas)->atlas);
 
-	if (_spineAtlas == nullptr) return 0;
-	if (_skin == nullptr) return 0;
+	if (_spineAtlas == nullptr) return (utf8 *)strdup(String("Invalid Atlas").buffer());
+	if (_skin == nullptr) return (utf8 *)strdup(String("Invalid Skin").buffer());
+
+	if (_atlas->getRegions().size() == 0) return (utf8 *)strdup(String("no regions").buffer());
+	if (_skin->getAllAttachmentNames().size() == 0) return (utf8 *)strdup(String("no attachments").buffer());
 
 	String regionEntryName = _atlas->getRegions()[0]->names[0];
 	String skinAttachmentName = _skin->getAllAttachmentNames()[0];
