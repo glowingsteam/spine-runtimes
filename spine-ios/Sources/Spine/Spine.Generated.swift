@@ -3412,9 +3412,9 @@ public final class Atlas: NSObject {
     }
 
     public func reloadUsedPages(skin: Skin, unloadOld: Bool) -> Int32 {
-        Int32 totalTextures = spine_reload_used_textures(self.wrappee, skin.wrappee, unloadOld)
-        NSLog("totalTextures: %d", totalTextures)
-        return totalTextures
+        let totalTextures = spine_reload_used_textures(self.wrappee, skin.wrappee, unloadOld);
+        NSLog("totalTextures: %d", totalTextures);
+        return totalTextures;
     }
 }
 
