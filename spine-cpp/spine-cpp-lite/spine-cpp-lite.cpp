@@ -348,14 +348,26 @@ const utf8 *spine_get_debug_texture_loading(spine_atlas atlas, spine_skin skin)
 
 	if (_atlas->getRegions().size() == 0) return (utf8 *)strdup(String("no regions").buffer());
 	if (_skin->getAllAttachmentNames().size() == 0) return (utf8 *)strdup(String("no attachments").buffer());
-    if (_atlas->getRegions()[0]->names.size() == 0) return (utf8 *)strdup(String("no subregions").buffer());
+    if (_atlas->getRegions()[0]->names.size() == 0)
+	{
+		String regionEntryName = _atlas->getRegions()[0]->name;
+		String skinAttachmentName = _skin->getAllAttachmentNames()[0];
 
-	String regionEntryName = _atlas->getRegions()[0]->names[0];
-	String skinAttachmentName = _skin->getAllAttachmentNames()[0];
+		String result = regionEntryName;
+		result.append(" ").append(skinAttachmentName.buffer());
+		return (utf8 *)strdup(result.buffer());
+	}
+	else
+	{
+		String regionEntryName = _atlas->getRegions()[0]->names[0];
+		String skinAttachmentName = _skin->getAllAttachmentNames()[0];
 
-	String result = regionEntryName;
-	//result.append(" ").append(skinAttachmentName.buffer());
-	return (utf8 *)strdup(result.buffer());
+		String result = regionEntryName;
+		result.append(" ").append(skinAttachmentName.buffer());
+		return (utf8 *)strdup(result.buffer());
+	}
+
+	
 }
 // AN_FIX_END
 
