@@ -151,7 +151,7 @@ public final class SkeletonDrawableWrapper: NSObject {
     @discardableResult
     public func setSkin(_ skin: Skin) async throws -> Bool {
         // Apply the skin to the skeleton
-        skeleton.setSkin(skin)
+        skeleton.skin = skin
         
         // Get updated textures based on the new skin
         let updatedTextures = try await atlas.reloadTextures(for: skin)

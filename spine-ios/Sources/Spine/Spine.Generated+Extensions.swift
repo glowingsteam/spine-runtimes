@@ -128,10 +128,6 @@ public extension Atlas {
             }
         }
         
-        if let debugNames = debugNames(skin: skin) {
-            print("Loaded textures for skin: \(debugNames)")
-        }
-        
         return newAtlasPages
     }
     

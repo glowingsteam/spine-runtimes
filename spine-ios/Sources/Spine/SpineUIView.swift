@@ -196,13 +196,6 @@ public final class SpineUIView: MTKView {
         }
     }
     
-    public func pauseAnimation() {
-        controller.isPlaying = false
-    }
-    
-    public func resumeAnimation() {
-        controller.isPlaying = true
-    }
     
     /// Updates the textures used by the renderer with the provided atlas pages
     /// This is used for dynamic texture loading when changing skins
