@@ -352,7 +352,11 @@ const utf8 *spine_get_debug_texture_loading(spine_atlas atlas, spine_skin skin)
 	{
 		String regionEntryName = _atlas->getRegions()[0]->name;
 		String skinAttachmentName = "invalid";
-		if (_skin->getAttachments().next()._attachment == nullptr)
+		if (!_skin->getAttachments().hasNext())
+		{
+			skinAttachmentName = "no next";
+		}
+		else if (_skin->getAttachments().next()._attachment == nullptr)
 		{
 			skinAttachmentName = "no valid attachment";
 		}
