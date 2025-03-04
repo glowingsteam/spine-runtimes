@@ -130,9 +130,38 @@ public final class SpineController: NSObject, ObservableObject {
         let x = position.x;
         let y = position.y;
         return CGPoint(
-            x: (x + offsetX) * scaleX,
-            y: (y + offsetY) * scaleY
+            x: (x + offsetX) * scaleX + viewSize.width / 2,
+            y: (y + offsetY) * scaleY + viewSize.height / 2
         )
+    }
+    
+    /// Sets a new skin on the skeleton and reloads only the textures needed for that skin
+    /// This reduces memory usage by only keeping required textures loaded
+    ///
+    /// - Parameters:
+    ///   - skin: The skin to apply to the skeleton
+    ///   - view: The SpineUIView to update with the new textures
+    /// - Returns: A boolean indicating if the operation was successful
+    @discardableResult
+    public func setSkin(_ skin: Skin, view: SpineUIView? = nil) async throws -> Bool {
+        guard drawable != nil else {
+            print("Error: Cannot set skin before drawable is initialized")
+            return false
+        }
+        
+        // Apply the skin to the skeleton
+        skeleton.setSkin(skin)
+        
+        // Get updated textures based on the new skin
+        let updatedTextures = try await atlas.reloadTextures(for: skin)
+        print("Loaded \(updatedTextures.count) textures for skin: \(skin.name)")
+        
+        // Update the view's renderer with the new textures if provided
+        if let view = view {
+            view.updateTextures(with: updatedTextures)
+        }
+        
+        return true
     }
     
     /// Pauses updating and rendering the skeleton.

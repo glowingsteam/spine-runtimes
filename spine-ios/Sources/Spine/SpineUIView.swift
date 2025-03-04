@@ -195,6 +195,36 @@ public final class SpineUIView: MTKView {
             }
         }
     }
+    
+    public func pauseAnimation() {
+        controller.isPlaying = false
+    }
+    
+    public func resumeAnimation() {
+        controller.isPlaying = true
+    }
+    
+    /// Updates the textures used by the renderer with the provided atlas pages
+    /// This is used for dynamic texture loading when changing skins
+    ///
+    /// - Parameter atlasPages: Array of UIImages to use as textures
+    public func updateTextures(with atlasPages: [UIImage]) {
+        do {
+            try renderer?.updateTextures(with: atlasPages)
+        } catch {
+            print("Failed to update textures: \(error)")
+        }
+    }
+    
+    /// Sets a new skin on the skeleton and reloads only the textures needed for that skin
+    /// This reduces memory usage by only keeping required textures loaded
+    ///
+    /// - Parameter skin: The skin to apply to the skeleton
+    /// - Returns: A boolean indicating if the operation was successful
+    @discardableResult
+    public func setSkin(_ skin: Skin) async throws -> Bool {
+        return try await controller.setSkin(skin, view: self)
+    }
 }
 
 extension SpineUIView {

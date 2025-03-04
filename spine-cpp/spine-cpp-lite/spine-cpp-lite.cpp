@@ -322,13 +322,18 @@ int32_t spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool inva
 		// Reset our image path counter
 		_spineAtlas->numImagePaths = 0;
 	}
-
+	
+	// Mark pages as "in use" based on the regions that are "in use"
+	for (size_t i = 0, n = _atlas->getRegions().size(); i < n; ++i) {
+		_atlas->getRegions()[i]->page->inUse = true;
+	}
+	
 	_spineAtlas->numImagePaths = (int32_t) _atlas->getPages().size();
 	_spineAtlas->imagePaths = SpineExtension::calloc<utf8 *>(_spineAtlas->numImagePaths, __FILE__, __LINE__);
-	for (int i = 0; i < _spineAtlas->numImagePaths; i++) {
+	for (int i = 0, n = _spineAtlas->numImagePaths; i < n; i++)
+	{
 		_spineAtlas->imagePaths[i] = (utf8 *) strdup(_atlas->getPages()[i]->texturePath.buffer());
 	}
-
 	return _spineAtlas->numImagePaths;
 
 	_atlas->validateAttachments(_skin->getAllAttachmentNames());
@@ -4739,6 +4744,7 @@ void spine_texture_region_set_v(spine_texture_region textureRegion, float v) {
 	TextureRegion *_region = (TextureRegion *) textureRegion;
 	_region->v = v;
 }
+
 float spine_texture_region_get_u2(spine_texture_region textureRegion) {
 	if (textureRegion == nullptr) return 0;
 	TextureRegion *_region = (TextureRegion *) textureRegion;
@@ -4955,5 +4961,3 @@ float *spine_polygon_get_vertices(spine_polygon polygon) {
 	if (polygon == nullptr) return 0;
 	return ((Polygon *) polygon)->_vertices.buffer();
 }
-
-

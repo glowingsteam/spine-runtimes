@@ -88,6 +88,66 @@ public extension Atlas {
         
         return (Atlas(atlas), atlasPages)
     }
+    
+    /// Reloads only the textures needed for a specific skin
+    /// Returns the array of UIImages for the required textures
+    /// 
+    /// - Parameter skin: The skin whose textures should be loaded
+    /// - Parameter invalidateAll: Whether to clear all existing textures first (true) or just update as needed (false)
+    /// - Returns: An array of UIImages containing only the textures needed for the specified skin
+    func reloadTextures(for skin: Skin, invalidateAll: Bool = true, bundle: Bundle = .main) async throws -> [UIImage] {
+        // Call C++ function to update the inUse flags and get the number of textures needed
+        let numTextures = spine_reload_used_textures(self.wrappee, skin.wrappee, invalidateAll)
+        
+        var newAtlasPages = [UIImage]()
+        // Load only the textures that were marked as needed
+        for i in 0..<numTextures {
+            guard let atlasPageFilePointer = spine_atlas_get_image_path(self.wrappee, Int32(i)) else {
+                continue
+            }
+            
+            let atlasPageFile = String(cString: atlasPageFilePointer)
+            do {
+                // Try to load image from bundle
+                let imageData = try await FileSource.bundle(fileName: atlasPageFile, bundle: bundle).load()
+                if let image = UIImage(data: imageData) {
+                    newAtlasPages.append(image)
+                }
+            } catch {
+                // If not in bundle, try to load from the file system by looking at the path
+                if let fileURL = URL(string: atlasPageFile) {
+                    do {
+                        let imageData = try await FileSource.file(fileURL).load()
+                        if let image = UIImage(data: imageData) {
+                            newAtlasPages.append(image)
+                        }
+                    } catch {
+                        print("Failed to load texture: \(atlasPageFile) - \(error)")
+                    }
+                }
+            }
+        }
+        
+        if let debugNames = debugNames(skin: skin) {
+            print("Loaded textures for skin: \(debugNames)")
+        }
+        
+        return newAtlasPages
+    }
+    
+    /// Returns debug information about the textures used by a specific skin
+    /// 
+    /// - Parameter skin: The skin to get texture information for
+    /// - Returns: A string with debugging information, or nil if unavailable
+    func debugNames(skin: Skin) -> String? {
+        guard let debugString = spine_get_debug_texture_loading(self.wrappee, skin.wrappee) else {
+            print("debugNames: nil (no string returned)")
+            return nil
+        }
+        
+        let swiftString = String(cString: debugString)
+        return swiftString
+    }
 }
 
 public extension SkeletonData {

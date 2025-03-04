@@ -23,7 +23,7 @@ protocol SpineRendererDataSource: AnyObject {
 internal final class SpineRenderer: NSObject, MTKViewDelegate {
     
     private let device: MTLDevice
-    private let textures: [MTLTexture]
+    private var textures: [MTLTexture]
     private let commandQueue: MTLCommandQueue
     
     private var sizeInPoints: CGSize = .zero
@@ -281,6 +281,31 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
         buffers = (0 ..< SpineRenderer.numberOfBuffers).map { _ in
             device.makeBuffer(length: size, options: .storageModeShared)!
         }
+    }
+    
+    internal func updateTextures(with atlasPages: [UIImage]) throws {
+        guard !atlasPages.isEmpty else {
+            print("Warning: No textures to update")
+            return
+        }
+        
+        let textureLoader = MTKTextureLoader(device: device)
+        let newTextures = try atlasPages
+            .compactMap { $0.cgImage }
+            .map {
+                try textureLoader.newTexture(
+                    cgImage: $0,
+                    options: [
+                        .textureUsage: NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
+                        .SRGB: false,
+                    ]
+                )
+            }
+        
+        // Replace the textures array with the new textures
+        textures = newTextures
+        
+        print("Updated renderer with \(textures.count) textures")
     }
 }
 

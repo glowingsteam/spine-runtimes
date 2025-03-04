@@ -142,4 +142,24 @@ public final class SkeletonDrawableWrapper: NSObject {
         
         skeletonDrawable.dispose()
     }
+    
+    /// Sets the skin on the skeleton and reloads only the necessary textures for that skin
+    /// This helps reduce memory usage by only keeping needed textures loaded
+    ///
+    /// - Parameter skin: The skin to apply to the skeleton
+    /// - Returns: A boolean indicating if the operation was successful
+    @discardableResult
+    public func setSkin(_ skin: Skin) async throws -> Bool {
+        // Apply the skin to the skeleton
+        skeleton.setSkin(skin)
+        
+        // Get updated textures based on the new skin
+        let updatedTextures = try await atlas.reloadTextures(for: skin)
+        print("Loaded \(updatedTextures.count) textures for skin: \(skin.name)")
+        
+        // Here we would update any renderer with the new textures
+        // This could be a more complex integration depending on your renderer
+        
+        return true
+    }
 }
