@@ -323,6 +323,14 @@ int32_t spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool inva
 		_spineAtlas->numImagePaths = 0;
 	}
 
+	_spineAtlas->numImagePaths = (int32_t) _atlas->getPages().size();
+	_spineAtlas->imagePaths = SpineExtension::calloc<utf8 *>(_spineAtlas->numImagePaths, __FILE__, __LINE__);
+	for (int i = 0; i < _spineAtlas->numImagePaths; i++) {
+		_spineAtlas->imagePaths[i] = (utf8 *) strdup(_atlas->getPages()[i]->texturePath.buffer());
+	}
+
+	return _spineAtlas->numImagePaths;
+
 	_atlas->validateAttachments(_skin->getAllAttachmentNames());
 	Vector<String> inUseTextures = _atlas->getInUseTexturePaths();
 	_spineAtlas->imagePaths = SpineExtension::calloc<utf8 *>(inUseTextures.size(), __FILE__, __LINE__);
@@ -339,6 +347,8 @@ int32_t spine_reload_used_textures(spine_atlas atlas, spine_skin skin, bool inva
 
 const utf8 *spine_get_debug_texture_loading(spine_atlas atlas, spine_skin skin)
 {
+	return (utf8 *)strdup(String("Skipping debug").buffer());
+
     _spine_atlas *_spineAtlas = (_spine_atlas *) atlas;
 	Skin *_skin = (Skin *) skin;
 	Atlas *_atlas = static_cast<Atlas *>(((_spine_atlas *) atlas)->atlas);
