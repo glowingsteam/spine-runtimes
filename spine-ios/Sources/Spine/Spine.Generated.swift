@@ -3416,17 +3416,6 @@ public final class Atlas: NSObject {
         NSLog("totalTextures: %d", totalTextures);
         return totalTextures;
     }
-
-    public func debugNames(skin: Skin) -> String? {
-        guard let debugString = spine_get_debug_texture_loading(self.wrappee, skin.wrappee) else {
-            print("debugNames: nil (no string returned)")
-            return nil
-        }
-        
-        let swiftString = String(cString: debugString)
-        print("debugNames: \(swiftString)")
-        return swiftString
-    }
 }
 
 @objc(SpineColor)
