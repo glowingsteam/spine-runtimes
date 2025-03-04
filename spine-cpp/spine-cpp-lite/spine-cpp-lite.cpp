@@ -351,10 +351,10 @@ const utf8 *spine_get_debug_texture_loading(spine_atlas atlas, spine_skin skin)
     if (_atlas->getRegions()[0]->names.size() == 0)
 	{
 		String regionEntryName = _atlas->getRegions()[0]->name;
-		String skinAttachmentName = _skin->getAllAttachmentNames()[0];
+		String skinAttachmentName = _skin->getAttachments().next()._attachment->getName();
 
 		String result = regionEntryName;
-		result.append(" ").append(skinAttachmentName.buffer());
+		result.append(" - ").append((int32_t)_atlas->getRegions().size()).append(" - ").append(skinAttachmentName.buffer());
 		return (utf8 *)strdup(result.buffer());
 	}
 	else
