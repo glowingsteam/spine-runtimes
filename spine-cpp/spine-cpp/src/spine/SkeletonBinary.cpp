@@ -337,6 +337,12 @@ SkeletonData *SkeletonBinary::readSkeletonData(const unsigned char *binary, cons
 		Skin *skin = readSkin(input, false, skeletonData, nonessential);
 		if (skin)
 			skeletonData->_skins.add(skin);
+		else {
+			delete input;
+			delete skeletonData;
+			setError("Invalid skin: ", "");
+			return NULL;
+		}
 	}
 
 	/* Linked meshes. */
@@ -506,32 +512,32 @@ Skin *SkeletonBinary::readSkin(DataInput *input, bool defaultSkin, SkeletonData 
 
 		for (int i = 0, n = readVarint(input, true); i < n; i++) {
 			int boneIndex = readVarint(input, true);
-			if (boneIndex >= (int) skeletonData->_bones.size()) return NULL;
-			skin->getBones().add(skeletonData->_bones[boneIndex]);
+			if (boneIndex < (int) skeletonData->_bones.size());
+				skin->getBones().add(skeletonData->_bones[boneIndex]);
 		}
 
 		for (int i = 0, n = readVarint(input, true); i < n; i++) {
 			int ikIndex = readVarint(input, true);
-			if (ikIndex >= (int) skeletonData->_ikConstraints.size()) return NULL;
-			skin->getConstraints().add(skeletonData->_ikConstraints[ikIndex]);
+			if (ikIndex < (int) skeletonData->_ikConstraints.size());
+				skin->getConstraints().add(skeletonData->_ikConstraints[ikIndex]);
 		}
 
 		for (int i = 0, n = readVarint(input, true); i < n; i++) {
 			int transformIndex = readVarint(input, true);
-			if (transformIndex >= (int) skeletonData->_transformConstraints.size()) return NULL;
-			skin->getConstraints().add(skeletonData->_transformConstraints[transformIndex]);
+			if (transformIndex < (int) skeletonData->_transformConstraints.size());
+				skin->getConstraints().add(skeletonData->_transformConstraints[transformIndex]);
 		}
 
 		for (int i = 0, n = readVarint(input, true); i < n; i++) {
 			int pathIndex = readVarint(input, true);
-			if (pathIndex >= (int) skeletonData->_pathConstraints.size()) return NULL;
-			skin->getConstraints().add(skeletonData->_pathConstraints[pathIndex]);
+			if (pathIndex < (int) skeletonData->_pathConstraints.size());
+				skin->getConstraints().add(skeletonData->_pathConstraints[pathIndex]);
 		}
 
 		for (int i = 0, n = readVarint(input, true); i < n; i++) {
 			int physicsIndex = readVarint(input, true);
-			if (physicsIndex >= (int) skeletonData->_physicsConstraints.size()) return NULL;
-			skin->getConstraints().add(skeletonData->_physicsConstraints[physicsIndex]);
+			if (physicsIndex < (int) skeletonData->_physicsConstraints.size());
+				skin->getConstraints().add(skeletonData->_physicsConstraints[physicsIndex]);
 		}
 		slotCount = readVarint(input, true);
 	}
@@ -543,9 +549,6 @@ Skin *SkeletonBinary::readSkin(DataInput *input, bool defaultSkin, SkeletonData 
 			Attachment *attachment = readAttachment(input, skin, slotIndex, name, skeletonData, nonessential);
 			if (attachment)
 				skin->setAttachment(slotIndex, String(name), attachment);
-			else {
-				return skin;
-			}
 		}
 	}
 	return skin;
