@@ -585,8 +585,8 @@ Attachment *SkeletonBinary::readAttachment(DataInput *input, Skin *skin, int slo
 			float height = readFloat(input) * _scale;
 			RegionAttachment *region = _attachmentLoader->newRegionAttachment(*skin, String(name), String(path), sequence);
 			if (!region) {
-				setError("Error reading attachment: ", name.buffer());
-				return NULL;
+				//setError("Error reading attachment: ", name.buffer());
+				return region;
 			}
 			region->_path = path;
 			region->_rotation = rotation;
@@ -605,8 +605,8 @@ Attachment *SkeletonBinary::readAttachment(DataInput *input, Skin *skin, int slo
 		case AttachmentType_Boundingbox: {
 			BoundingBoxAttachment *box = _attachmentLoader->newBoundingBoxAttachment(*skin, String(name));
 			if (!box) {
-				setError("Error reading attachment: ", name.buffer());
-				return NULL;
+				//setError("Error reading attachment: ", name.buffer());
+				return box;
 			}
 			int verticesLength = readVertices(input, box->getVertices(), box->getBones(), (flags & 16) != 0);
 			box->setWorldVerticesLength(verticesLength);
@@ -643,8 +643,8 @@ Attachment *SkeletonBinary::readAttachment(DataInput *input, Skin *skin, int slo
 
 			MeshAttachment *mesh = _attachmentLoader->newMeshAttachment(*skin, String(name), String(path), sequence);
 			if (!mesh) {
-				setError("Error reading attachment: ", name.buffer());
-				return NULL;
+				//setError("Error reading attachment: ", name.buffer());
+				return mesh;
 			}
 			mesh->_path = path;
 			mesh->_color.set(color);
@@ -680,8 +680,8 @@ Attachment *SkeletonBinary::readAttachment(DataInput *input, Skin *skin, int slo
 
 			MeshAttachment *mesh = _attachmentLoader->newMeshAttachment(*skin, String(name), String(path), sequence);
 			if (!mesh) {
-				setError("Error reading attachment: ", name.buffer());
-				return NULL;
+				//setError("Error reading attachment: ", name.buffer());
+				return mesh;
 			}
 			mesh->_path = path;
 			mesh->_color.set(color);
@@ -699,8 +699,8 @@ Attachment *SkeletonBinary::readAttachment(DataInput *input, Skin *skin, int slo
 		case AttachmentType_Path: {
 			PathAttachment *path = _attachmentLoader->newPathAttachment(*skin, String(name));
 			if (!path) {
-				setError("Error reading attachment: ", name.buffer());
-				return NULL;
+				//setError("Error reading attachment: ", name.buffer());
+				return path;
 			}
 			path->_closed = (flags & 16) != 0;
 			path->_constantSpeed = (flags & 32) != 0;
@@ -720,8 +720,8 @@ Attachment *SkeletonBinary::readAttachment(DataInput *input, Skin *skin, int slo
 		case AttachmentType_Point: {
 			PointAttachment *point = _attachmentLoader->newPointAttachment(*skin, String(name));
 			if (!point) {
-				setError("Error reading attachment: ", name.buffer());
-				return NULL;
+				//setError("Error reading attachment: ", name.buffer());
+				return point;
 			}
 			point->_rotation = readFloat(input);
 			point->_x = readFloat(input) * _scale;
@@ -737,8 +737,8 @@ Attachment *SkeletonBinary::readAttachment(DataInput *input, Skin *skin, int slo
 			int endSlotIndex = readVarint(input, true);
 			ClippingAttachment *clip = _attachmentLoader->newClippingAttachment(*skin, name);
 			if (!clip) {
-				setError("Error reading attachment: ", name.buffer());
-				return NULL;
+				//setError("Error reading attachment: ", name.buffer());
+				return clip;
 			}
 			int verticesLength = readVertices(input, clip->getVertices(), clip->getBones(), (flags & 16) != 0);
 			clip->setWorldVerticesLength(verticesLength);
