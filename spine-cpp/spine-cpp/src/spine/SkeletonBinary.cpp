@@ -340,6 +340,7 @@ SkeletonData *SkeletonBinary::readSkeletonData(const unsigned char *binary, cons
 		else {
 			delete input;
 			delete skeletonData;
+			setError("Invalid skin", "");
 			return NULL;
 		}
 	}
@@ -390,6 +391,7 @@ SkeletonData *SkeletonBinary::readSkeletonData(const unsigned char *binary, cons
 		if (!animation) {
 			delete input;
 			delete skeletonData;
+			setError("Invalid Animation", "");
 			return NULL;
 		}
 		skeletonData->_animations[i] = animation;
