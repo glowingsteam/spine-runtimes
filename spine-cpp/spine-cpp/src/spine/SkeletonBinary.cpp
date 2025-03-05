@@ -337,12 +337,6 @@ SkeletonData *SkeletonBinary::readSkeletonData(const unsigned char *binary, cons
 		Skin *skin = readSkin(input, false, skeletonData, nonessential);
 		if (skin)
 			skeletonData->_skins.add(skin);
-		else {
-			delete input;
-			delete skeletonData;
-			setError("Invalid skin", "");
-			return NULL;
-		}
 	}
 
 	/* Linked meshes. */
