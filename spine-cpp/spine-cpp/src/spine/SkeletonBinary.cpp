@@ -544,8 +544,7 @@ Skin *SkeletonBinary::readSkin(DataInput *input, bool defaultSkin, SkeletonData 
 			if (attachment)
 				skin->setAttachment(slotIndex, String(name), attachment);
 			else {
-				delete skin;
-				return NULL;
+				return skin;
 			}
 		}
 	}
