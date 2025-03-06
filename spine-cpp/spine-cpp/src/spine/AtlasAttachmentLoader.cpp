@@ -61,7 +61,7 @@ namespace spine {
 			if (!loadSequence(_atlas, path, sequence)) return NULL;
 		} else {
 			AtlasRegion *region = findRegion(path);
-			if (!region) return NULL;
+			if (!region) return attachment;
 			attachment->setRegion(region);
 		}
 		return attachment;
@@ -75,7 +75,7 @@ namespace spine {
 			if (!loadSequence(_atlas, path, sequence)) return NULL;
 		} else {
 			AtlasRegion *region = findRegion(path);
-			if (!region) return NULL;
+			if (!region) return attachment;
 			attachment->setRegion(region);
 		}
 		return attachment;
