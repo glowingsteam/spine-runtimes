@@ -58,7 +58,7 @@ namespace spine {
 		SP_UNUSED(skin);
 		RegionAttachment *attachment = new (__FILE__, __LINE__) RegionAttachment(name);
 		if (sequence) {
-			if (!loadSequence(_atlas, path, sequence)) return NULL;
+			if (!loadSequence(_atlas, path, sequence)) return attachment;
 		} else {
 			AtlasRegion *region = findRegion(path);
 			if (!region) return attachment;
@@ -72,7 +72,7 @@ namespace spine {
 		MeshAttachment *attachment = new (__FILE__, __LINE__) MeshAttachment(name);
 
 		if (sequence) {
-			if (!loadSequence(_atlas, path, sequence)) return NULL;
+			if (!loadSequence(_atlas, path, sequence)) return attachment;
 		} else {
 			AtlasRegion *region = findRegion(path);
 			if (!region) return attachment;
