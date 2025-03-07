@@ -58,10 +58,18 @@ namespace spine {
 		SP_UNUSED(skin);
 		RegionAttachment *attachment = new (__FILE__, __LINE__) RegionAttachment(name);
 		if (sequence) {
+			// AN_FIX - Supress Invalid Atlas
+			//if (!loadSequence(_atlas, path, sequence)) return NULL;
 			if (!loadSequence(_atlas, path, sequence)) return attachment;
+			// AN_FIX_END - Supress Invalid Atlas
 		} else {
 			AtlasRegion *region = findRegion(path);
+			
+			// AN_FIX - Supress Invalid Atlas
+			//if (!region) return NULL;
 			if (!region) return attachment;
+			// AN_FIX_END - Supress Invalid Atlas
+			
 			attachment->setRegion(region);
 		}
 		return attachment;
@@ -72,10 +80,16 @@ namespace spine {
 		MeshAttachment *attachment = new (__FILE__, __LINE__) MeshAttachment(name);
 
 		if (sequence) {
+			// AN_FIX - Supress Invalid Atlas
+			//if (!loadSequence(_atlas, path, sequence)) return NULL;
 			if (!loadSequence(_atlas, path, sequence)) return attachment;
+			// AN_FIX_END - Supress Invalid Atlas
 		} else {
 			AtlasRegion *region = findRegion(path);
+			// AN_FIX - Supress Invalid Atlas
+			//if (!region) return NULL;
 			if (!region) return attachment;
+			// AN_FIX_END - Supress Invalid Atlas
 			attachment->setRegion(region);
 		}
 		return attachment;
