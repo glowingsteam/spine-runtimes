@@ -13,6 +13,8 @@ protocol SpineRendererDelegate: AnyObject {
     func spineRendererDidDraw(_ spineRenderer: SpineRenderer)
     
     func spineRendererDidUpdate(_ spineRenderer: SpineRenderer, scaleX: CGFloat, scaleY: CGFloat, offsetX: CGFloat, offsetY: CGFloat, size: CGSize)
+    
+    func spineRendererDidDrawFirstFrame(_ spineRenderer: SpineRenderer)
 }
 
 protocol SpineRendererDataSource: AnyObject {
@@ -115,6 +117,11 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
+        // Notify the delegate about the first frame specifically
+        if lastDraw == 0 {
+            delegate?.spineRendererDidDrawFirstFrame(self)
+        }
+        
         guard dataSource?.isPlaying(self) ?? false else {
             lastDraw = CACurrentMediaTime()
             return
@@ -122,7 +129,7 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
         
         callNeedsUpdate()
         
-        // Tripple Buffering
+        // Triple Buffering
         // Source: https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/TripleBuffering.html#//apple_ref/doc/uid/TP40016642-CH5-SW1
         bufferingSemaphore.wait()
         currentBufferIndex = (currentBufferIndex + 1) % SpineRenderer.numberOfBuffers
@@ -347,7 +354,6 @@ fileprivate extension BlendMode {
 }
 
 fileprivate extension MTLRenderPipelineColorAttachmentDescriptor {
-	
 	func apply(blendMode: BlendMode, with premultipliedAlpha: Bool) {
 		isBlendingEnabled = true
 		sourceRGBBlendFactor = blendMode.sourceRGBBlendFactor(premultipliedAlpha: premultipliedAlpha)

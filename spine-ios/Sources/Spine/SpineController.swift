@@ -42,6 +42,7 @@ public final class SpineController: NSObject, ObservableObject {
     private let onAfterUpdateWorldTransforms: SpineControllerCallback?
     private let onBeforePaint: SpineControllerCallback?
     private let onAfterPaint: SpineControllerCallback?
+    private let onFirstFrameDrawn: SpineControllerCallback?
     private let disposeDrawableOnDeInit: Bool
     
     private var scaleX: CGFloat = 1
@@ -63,6 +64,7 @@ public final class SpineController: NSObject, ObservableObject {
         onAfterUpdateWorldTransforms: SpineControllerCallback? = nil,
         onBeforePaint: SpineControllerCallback? = nil,
         onAfterPaint: SpineControllerCallback? = nil,
+        onFirstFrameDrawn: SpineControllerCallback? = nil,
         disposeDrawableOnDeInit: Bool = true
     ) {
         self.onInitialized = onInitialized
@@ -70,6 +72,7 @@ public final class SpineController: NSObject, ObservableObject {
         self.onAfterUpdateWorldTransforms = onAfterUpdateWorldTransforms
         self.onBeforePaint = onBeforePaint
         self.onAfterPaint = onAfterPaint
+        self.onFirstFrameDrawn = onFirstFrameDrawn
         self.disposeDrawableOnDeInit = disposeDrawableOnDeInit
         
         super.init()
@@ -169,7 +172,6 @@ public final class SpineController: NSObject, ObservableObject {
 }
 
 extension SpineController: SpineRendererDelegate {
-    
     func spineRendererWillDraw(_ spineRenderer: SpineRenderer) {
         onBeforePaint?(self)
     }
@@ -178,17 +180,27 @@ extension SpineController: SpineRendererDelegate {
         onAfterPaint?(self)
     }
     
-    func spineRendererDidUpdate(_ spineRenderer: SpineRenderer, scaleX: CGFloat, scaleY: CGFloat, offsetX: CGFloat, offsetY: CGFloat, size: CGSize) {
+    func spineRendererDidUpdate(
+        _ spineRenderer: SpineRenderer,
+        scaleX: CGFloat,
+        scaleY: CGFloat,
+        offsetX: CGFloat,
+        offsetY: CGFloat,
+        size: CGSize
+    ) {
         self.scaleX = scaleX
         self.scaleY = scaleY
         self.offsetX = offsetX
         self.offsetY = offsetY
         self.viewSize = size
     }
+    
+    func spineRendererDidDrawFirstFrame(_ spineRenderer: SpineRenderer) {
+        onFirstFrameDrawn?(self)
+    }
 }
 
 extension SpineController: SpineRendererDataSource {
-    
     func spineRendererWillUpdate(_ spineRenderer: SpineRenderer) {
         onBeforeUpdateWorldTransforms?(self)
     }
