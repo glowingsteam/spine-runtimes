@@ -175,7 +175,7 @@ RenderCommand *SkeletonRenderer::render(Skeleton &skeleton) {
 				clipper.clipEnd(slot);
 				continue;
 			}
-            
+            // AN_FIX - Supress Invalid Atlas - Debug crashing
             // TODO: Remove or comment out when no longer needed
             // Applying a skin or animation with an unknown dependency will still crash,
             // but at least it will log out what's causing it
@@ -195,7 +195,8 @@ RenderCommand *SkeletonRenderer::render(Skeleton &skeleton) {
                            mesh->getName().buffer());
                 }
             }
-
+            // AN_FIX_END
+            
 			worldVertices->setSize(8, 0);
 			regionAttachment->computeWorldVertices(slot, *worldVertices, 0, 2);
 			verticesCount = 4;
