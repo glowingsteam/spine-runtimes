@@ -3005,7 +3005,11 @@ spine_skin_entries spine_skin_get_entries(spine_skin skin) {
 	if (skin == nullptr) return nullptr;
 	Skin *_skin = (Skin *) skin;
 	_spine_skin_entries *entries = SpineExtension::getInstance()->calloc<_spine_skin_entries>(1, __FILE__, __LINE__);
+
 	// AN_FIX - Fix Get Entries Freeze
+
+	printf("AN_SPINE: Warning: Get Entries will freeze and cannot be called\n");
+
 	//{
 	//	Skin::AttachmentMap::Entries mapEntries = _skin->getAttachments();
 	//	while (mapEntries.hasNext()) entries->numEntries++;
@@ -3019,7 +3023,9 @@ spine_skin_entries spine_skin_get_entries(spine_skin skin) {
 	//		entries->entries[i++] = {(int32_t) entry._slotIndex, (utf8 *) entry._name.buffer(), (spine_attachment) entry._attachment};
 	//	}
 	//}
+
 	// AN_FIX - Fix Get Entries Freeze
+	
 	return (spine_skin_entries) entries;
 }
 
