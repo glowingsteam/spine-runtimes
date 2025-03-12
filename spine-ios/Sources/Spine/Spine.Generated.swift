@@ -2316,6 +2316,10 @@ public final class SkinEntries: NSObject {
         super.init()
     }
 
+    public var numEntries: Int32 {
+        return spine_skin_entries_get_num_entries(wrappee)
+    }
+
     @discardableResult
     public func getEntry(index: Int32) -> SkinEntry {
         return .init(spine_skin_entries_get_entry(wrappee, index))
