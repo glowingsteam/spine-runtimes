@@ -14,7 +14,9 @@ protocol SpineRendererDelegate: AnyObject {
     
     func spineRendererDidUpdate(_ spineRenderer: SpineRenderer, scaleX: CGFloat, scaleY: CGFloat, offsetX: CGFloat, offsetY: CGFloat, size: CGSize)
     
+    // AN_FIX - For syncing the two models
     func spineRendererDidDrawFirstFrame(_ spineRenderer: SpineRenderer)
+    // AN_FIX_END
 }
 
 protocol SpineRendererDataSource: AnyObject {
@@ -117,10 +119,12 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
+        // AN_FIX - For syncing the two models
         // Notify the delegate about the first frame specifically
         if lastDraw == 0 {
             delegate?.spineRendererDidDrawFirstFrame(self)
         }
+        // AN_FIX_END
         
         guard dataSource?.isPlaying(self) ?? false else {
             lastDraw = CACurrentMediaTime()

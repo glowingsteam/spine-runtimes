@@ -42,7 +42,9 @@ public final class SpineController: NSObject, ObservableObject {
     private let onAfterUpdateWorldTransforms: SpineControllerCallback?
     private let onBeforePaint: SpineControllerCallback?
     private let onAfterPaint: SpineControllerCallback?
+    // AN_FIX - For syncing the two models
     private let onFirstFrameDrawn: SpineControllerCallback?
+    // AN_FIX_END
     private let disposeDrawableOnDeInit: Bool
     
     private var scaleX: CGFloat = 1
@@ -64,7 +66,9 @@ public final class SpineController: NSObject, ObservableObject {
         onAfterUpdateWorldTransforms: SpineControllerCallback? = nil,
         onBeforePaint: SpineControllerCallback? = nil,
         onAfterPaint: SpineControllerCallback? = nil,
+        // AN_FIX - For syncing the two models
         onFirstFrameDrawn: SpineControllerCallback? = nil,
+        // AN_FIX_END
         disposeDrawableOnDeInit: Bool = true
     ) {
         self.onInitialized = onInitialized
@@ -72,7 +76,9 @@ public final class SpineController: NSObject, ObservableObject {
         self.onAfterUpdateWorldTransforms = onAfterUpdateWorldTransforms
         self.onBeforePaint = onBeforePaint
         self.onAfterPaint = onAfterPaint
+        // AN_FIX - For syncing the two models
         self.onFirstFrameDrawn = onFirstFrameDrawn
+        // AN_FIX_END
         self.disposeDrawableOnDeInit = disposeDrawableOnDeInit
         
         super.init()
