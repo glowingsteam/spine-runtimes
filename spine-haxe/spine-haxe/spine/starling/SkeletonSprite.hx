@@ -423,6 +423,10 @@ class SkeletonSprite extends DisplayObject implements IAnimatable {
 			_state = null;
 		}
 		if (_skeleton != null) _skeleton = null;
+		dispatchEventWith(starling.events.Event.REMOVE_FROM_JUGGLER);
+		removeFromParent();
+
+		// this will remove also all starling event listeners
 		super.dispose();
 	}
 }
