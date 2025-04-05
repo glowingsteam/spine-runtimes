@@ -17,6 +17,10 @@ protocol SpineRendererDelegate: AnyObject {
     // AN_FIX - For syncing the two models
     func spineRendererDidDrawFirstFrame(_ spineRenderer: SpineRenderer)
     // AN_FIX_END
+    
+    // AN_FIX - For updating stuff after spine renderer did draw *once*
+    func spineRendererAfterDidDrawOnce(_ spineRenderer: SpineRenderer)
+    // AN_FIX_END
 }
 
 protocol SpineRendererDataSource: AnyObject {
@@ -50,6 +54,10 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
     
     weak var dataSource: SpineRendererDataSource?
     weak var delegate: SpineRendererDelegate?
+    
+    // AN_FIX - Flag for shouldCallAfterDrawOnce callback
+    private var shouldCallAfterDrawOnce: Bool = true
+    // AN_FIX_END
     
     internal init(
         device: MTLDevice,
@@ -123,6 +131,13 @@ internal final class SpineRenderer: NSObject, MTKViewDelegate {
         // Notify the delegate about the first frame specifically
         if lastDraw == 0 {
             delegate?.spineRendererDidDrawFirstFrame(self)
+        }
+        // AN_FIX_END
+        
+        // AN_FIX - For updating stuff after spine renderer did draw *once*
+        if shouldCallAfterDrawOnce && currentBufferIndex == 1 {
+            delegate?.spineRendererAfterDidDrawOnce(self)
+            self.shouldCallAfterDrawOnce = false
         }
         // AN_FIX_END
         

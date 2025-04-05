@@ -42,9 +42,15 @@ public final class SpineController: NSObject, ObservableObject {
     private let onAfterUpdateWorldTransforms: SpineControllerCallback?
     private let onBeforePaint: SpineControllerCallback?
     private let onAfterPaint: SpineControllerCallback?
+    
     // AN_FIX - For syncing the two models
     private let onFirstFrameDrawn: SpineControllerCallback?
     // AN_FIX_END
+    
+    // AN_FIX - For updating stuff after spine renderer did draw *once*
+    private let onAfterDidDrawOnce: SpineControllerCallback?
+    // AN_FIX_END
+    
     private let disposeDrawableOnDeInit: Bool
     
     private var scaleX: CGFloat = 1
@@ -66,9 +72,15 @@ public final class SpineController: NSObject, ObservableObject {
         onAfterUpdateWorldTransforms: SpineControllerCallback? = nil,
         onBeforePaint: SpineControllerCallback? = nil,
         onAfterPaint: SpineControllerCallback? = nil,
+        
         // AN_FIX - For syncing the two models
         onFirstFrameDrawn: SpineControllerCallback? = nil,
         // AN_FIX_END
+        
+        // AN_FIX - For updating stuff after spine renderer did draw *once*
+        onAfterDidDrawOnce: SpineControllerCallback? = nil,
+        // AN_FIX_END
+        
         disposeDrawableOnDeInit: Bool = true
     ) {
         self.onInitialized = onInitialized
@@ -76,9 +88,15 @@ public final class SpineController: NSObject, ObservableObject {
         self.onAfterUpdateWorldTransforms = onAfterUpdateWorldTransforms
         self.onBeforePaint = onBeforePaint
         self.onAfterPaint = onAfterPaint
+        
         // AN_FIX - For syncing the two models
         self.onFirstFrameDrawn = onFirstFrameDrawn
         // AN_FIX_END
+        
+        // AN_FIX - For updatings tuff after spine renderer did draw *once*
+        self.onAfterDidDrawOnce = onAfterDidDrawOnce
+        // AN_FIX_END
+        
         self.disposeDrawableOnDeInit = disposeDrawableOnDeInit
         
         super.init()
@@ -201,9 +219,17 @@ extension SpineController: SpineRendererDelegate {
         self.viewSize = size
     }
     
+    // AN_FIX - For syncing the two models
     func spineRendererDidDrawFirstFrame(_ spineRenderer: SpineRenderer) {
         onFirstFrameDrawn?(self)
     }
+    // AN_FIX_END
+    
+    // AN_FIX - For updating stuff after spine renderer did draw *once*
+    func spineRendererAfterDidDrawOnce(_ spineRenderer: SpineRenderer) {
+        onAfterDidDrawOnce?(self)
+    }
+    // AN_FIX_END
 }
 
 extension SpineController: SpineRendererDataSource {
