@@ -70,16 +70,25 @@ public extension SkeletonDrawableWrapper {
     /// and `SpineController` to be used throughout the
     /// sticker exporting session.
     ///
-    func setupRenderContext(size: CGSize) throws -> (
+    func setupRenderContext(size: CGSize, bounds: RawBounds? = nil) throws -> (
         SpineUIView,
         SpineController
     ) {
         let controller = SpineController(disposeDrawableOnDeInit: false)
         
-        let spineView = SpineUIView(
-            controller: controller,
-            backgroundColor: .clear
-        )
+        var spineView: SpineUIView
+        if let bounds = bounds {
+            spineView = SpineUIView(
+                controller: controller,
+                boundsProvider: bounds,
+                backgroundColor: .clear
+            )
+        } else {
+            spineView = SpineUIView(
+                controller: controller,
+                backgroundColor: .clear
+            )
+        }
                 
         spineView.frame = CGRect(origin: .zero, size: size)
         spineView.isPaused = false
