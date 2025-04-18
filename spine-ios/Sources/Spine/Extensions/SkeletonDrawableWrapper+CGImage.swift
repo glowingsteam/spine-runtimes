@@ -170,7 +170,7 @@ public extension SkeletonDrawableWrapper {
         let spineView = SpineUIView(
             controller: SpineController(disposeDrawableOnDeInit: false), // Doesn't own the drawable
             boundsProvider: RawBounds(
-                x: -150, y: -1480, width: 300, height: 1480
+                x: -150, y: -1300, width: 300, height: 1300
             ),
             backgroundColor: .clear
         )
